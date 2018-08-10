@@ -1,1 +1,1 @@
-# arkhitekton
+# arkhitekton-templates
