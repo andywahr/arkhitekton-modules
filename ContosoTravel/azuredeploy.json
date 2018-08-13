@@ -4,13 +4,13 @@
   "parameters": {
     "baseURI": {
       "type": "string",
-      "defaultValue": ""
+      "defaultValue": "https://raw.githubusercontent.com/andywahr/arkhitekton-modules/master/ContosoTravel"
     }
   },
   "variables": {
-    "VnetLink": "[concat(variables('baseURI'),'/base/vnet/azuredeploy-asp.json')]",
-    "LogAnalyticsLink": "[concat(variables('baseURI'),'/base/loganalytics/azuredeploy-asp.json')]"
-    //"AppInsightsLink": "[concat(variables('baseURI'),'/base/appinsights/azuredeploy-asp.json')]"
+    "VnetLink": "[concat(variables('baseURI'),'/base/vnet/azuredeploy-vnet.json')]",
+    "LogAnalyticsLink": "[concat(variables('baseURI'),'/base/loganalytics/azuredeploy-loganalytics.json')]"
+    //"AppInsightsLink": "[concat(variables('baseURI'),'/base/appinsights/azuredeploy-appinsights.json')]"
   },
   "resources": [
     {
