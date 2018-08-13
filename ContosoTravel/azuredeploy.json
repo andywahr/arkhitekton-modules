@@ -1,13 +1,9 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
-  "parameters": {
-    "baseURI": {
-      "type": "string",
-      "defaultValue": "https://raw.githubusercontent.com/andywahr/arkhitekton-modules/master/ContosoTravel"
-    }
-  },
+  "parameters": {},
   "variables": {
+    "baseURI": "https://raw.githubusercontent.com/andywahr/arkhitekton-modules/master/ContosoTravel",
     "VnetLink": "[concat(variables('baseURI'),'/base/vnet/azuredeploy-vnet.json')]",
     "LogAnalyticsLink": "[concat(variables('baseURI'),'/base/loganalytics/azuredeploy-loganalytics.json')]"
     //"AppInsightsLink": "[concat(variables('baseURI'),'/base/appinsights/azuredeploy-appinsights.json')]"
