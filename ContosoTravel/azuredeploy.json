@@ -1,0 +1,45 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "baseURI": {
+      "type": "string",
+      "defaultValue": ""
+    }
+  },
+  "variables": {
+    "VnetLink": "[concat(variables('baseURI'),'/base/vnet/azuredeploy-asp.json')]",
+    "LogAnalyticsLink": "[concat(variables('baseURI'),'/base/loganalytics/azuredeploy-asp.json')]"
+    //"AppInsightsLink": "[concat(variables('baseURI'),'/base/appinsights/azuredeploy-asp.json')]"
+  },
+  "resources": [
+    {
+      "name": "VNET-Template",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2016-09-01",
+      "dependsOn": [],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('VnetLink')]",
+          "contentVersion": "1.0.0.0"
+        }
+      }
+    },
+    {
+      "name": "Log-Analytics-Template",
+      "type": "Microsoft.OperationalInsights/workspaces",
+      "apiVersion": "2017-03-15-preview",
+      "location": "East US",
+      "dependsOn": [],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('LogAnalyticsLink')]",
+          "contentVersion": "1.0.0.0"
+        }
+      }
+    }
+  ],
+  "outputs": {}
+}
