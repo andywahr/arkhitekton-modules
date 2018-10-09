@@ -1,41 +1,48 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
-  "parameters": {},
+  "parameters": {
+      "namePrefix": {
+          "maxLength": 8,
+          "type": "string"
+      }
+  },
   "variables": {
-    "apiVersion": "2018-07-01",
-    "baseURI": "https://raw.githubusercontent.com/andywahr/arkhitekton-modules/master/ContosoTravel",
-    "VnetLink": "[concat(variables('baseURI'),'/base/vnet/azuredeploy-vnet.json')]",
-    "LogAnalyticsLink": "[concat(variables('baseURI'),'/base/loganalytics/azuredeploy-loganalytics.json')]",
-    "StorageLink": "[concat(variables('baseURI'),'/base/storage/azuredeploy-storage.json')]"
-    //"AppInsightsLink": "[concat(variables('baseURI'),'/base/appinsights/azuredeploy-appinsights.json')]"
+      "apiVersion": "2018-07-01",
+      "baseURI": "https://raw.githubusercontent.com/andywahr/arkhitekton-modules/master/ContosoTravel",
+      "VnetLink": "[concat(variables('baseURI'),'/base/vnet/azuredeploy-vnet.json')]",
+      "LogAnalyticsLink": "[concat(variables('baseURI'),'/base/loganalytics/azuredeploy-loganalytics.json')]",
+      "StorageLink": "[concat(variables('baseURI'),'/base/storage/azuredeploy-storage.json')]"
   },
   "resources": [
-    {
-      "name": "VNET-Template",
-      "type": "Microsoft.Resources/deployments",
-      "apiVersion": "[variables('apiVersion')]",
-      "dependsOn": [],
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[variables('VnetLink')]",
-          "contentVersion": "1.0.0.0"
-        }
+      {
+          "type": "Microsoft.Resources/deployments",
+          "name": "VNET-Template",
+          "apiVersion": "[variables('apiVersion')]",
+          "properties": {
+              "mode": "Incremental",
+              "templateLink": {
+                  "uri": "[variables('VnetLink')]",
+                  "contentVersion": "1.0.0.0"
+              }
+          }
+      },
+      {
+          "type": "Microsoft.Resources/deployments",
+          "name": "Storage-Template",
+          "apiVersion": "[variables('apiVersion')]",
+          "properties": {
+              "mode": "Incremental",
+              "templateLink": {
+                  "uri": "[variables('StorageLink')]",
+                  "contentVersion": "1.0.0.0"
+              },
+              "parameters": {
+                  "namePrefix": {
+                      "value": "[parameters('namePrefix')]"
+                  }
+              }
+          }
       }
-    },     
-    {
-      "name": "Storage-Template",
-      "type": "Microsoft.Resources/deployments",
-      "apiVersion": "[variables('apiVersion')]",
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[variables('StorageLink')]",
-          "contentVersion": "1.0.0.0"
-        }
-      }
-    }
-  ],
-  "outputs": {}
+  ]
 }
