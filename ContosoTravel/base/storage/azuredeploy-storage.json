@@ -9,7 +9,7 @@
     },
     "variables": {
         "storageAccount": {
-            "defaultValue": "[concat(parameters('namePrefix'), 'storcontosotrav')]",
+            "defaultValue": "[concat(string(parameters('namePrefix')), 'storcontosotrav')]",
             "type": "string"
         },
         "virtualNetworks_VNet1_name": {
