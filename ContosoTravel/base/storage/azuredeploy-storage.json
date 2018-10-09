@@ -7,16 +7,13 @@
             "maxLength": 8
         },
         "vnetName": {
-            "type": "string",
-            "maxLength": 8
+            "type": "string"
         },
         "subnet1Name": {
-            "type": "string",
-            "maxLength": 8
+            "type": "string"
         },
         "subnet2Name": {
-            "type": "string",
-            "maxLength": 8
+            "type": "string"
         }
     },
     "variables": {

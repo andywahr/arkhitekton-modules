@@ -2,89 +2,91 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-      "namePrefix": {
-          "maxLength": 8,
-          "type": "string"
-      }
+    "namePrefix": {
+      "maxLength": 8,
+      "type": "string"
+    }
   },
   "variables": {
-    "vnetName" :"[concat(parameters('namePrefix'),'VNet1')]",
-    "subnet1Name":"Subnet1",
-    "subnet2Name":"Subnet2",
-      "location": "[resourceGroup().location]",
-      "apiVersion": "2018-07-01",
-      "baseURI": "https://raw.githubusercontent.com/andywahr/arkhitekton-modules/master/ContosoTravel",
-      "LogAnalyticsLink": "[concat(variables('baseURI'),'/base/loganalytics/azuredeploy-loganalytics.json')]",
-      "StorageLink": "[concat(variables('baseURI'),'/base/storage/azuredeploy-storage.json')]"
+    "vnetName": "[concat(parameters('namePrefix'),'VNet1')]",
+    "subnet1Name": "Subnet1",
+    "subnet2Name": "Subnet2",
+    "location": "[resourceGroup().location]",
+    "apiVersion": "2018-07-01",
+    "baseURI": "https://andywahrstorapps.blob.core.windows.net/contosotravel",
+    "LogAnalyticsLink": "[concat(variables('baseURI'),'/base/loganalytics/azuredeploy-loganalytics.json')]",
+    "StorageLink": "[concat(variables('baseURI'),'/base/storage/azuredeploy-storage.json')]",
+    "VNETLink": "[concat(variables('baseURI'),'/base/vnet/azuredeploy-vnet.json')]"
   },
   "resources": [
     {
+      "type": "Microsoft.Resources/deployments",
+      "name": "VNET-Template",
       "apiVersion": "[variables('apiVersion')]",
-      "type": "Microsoft.Network/virtualNetworks",
-      "name": "[variables('vnetName')]",
-      "location": "[variables('location')]",
       "properties": {
-        "addressSpace": {
-          "addressPrefixes": [
-            "10.0.0.0/16"
-          ]
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('VNETLink')]",
+          "contentVersion": "1.0.0.0"
         },
-        "subnets": [
-          {
-            "name": "[variables('subnet1Name')]",
-            "properties": {
-              "addressPrefix": "10.0.0.0/24",
-              "serviceEndpoints": [
-                {
-                    "service": "Microsoft.Storage"
-                }
-              ]
-            }
+        "parameters": {
+          "vnetName": {
+            "value": "[variables('vnetName')]"
           },
-          {
-            "name": "[variables('subnet2Name')]",
-            "properties": {
-              "addressPrefix": "10.0.1.0/24",
-              "serviceEndpoints": [
-                {
-                    "service": "Microsoft.Storage"
-                }
-              ]
-            }
+          "subnet1Name": {
+            "value": "[variables('subnet1Name')]"
+          },
+          "subnet2Name": {
+            "value": "[variables('subnet2Name')]"
           }
-        ],
-        "enableDdosProtection": false,
-        "enableVmProtection": false
+        }
       }
     },
-      {
-          "type": "Microsoft.Resources/deployments",
-          "name": "Storage-Template",
-          "dependsOn": [
-            "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]"
-          ],
-          "apiVersion": "[variables('apiVersion')]",
-          "properties": {
-              "mode": "Incremental",
-              "templateLink": {
-                  "uri": "[variables('StorageLink')]",
-                  "contentVersion": "1.0.0.0"
-              },
-              "parameters": {
-                  "namePrefix": {
-                      "value": "[parameters('namePrefix')]"
-                  },
-                  "vnetName": {
-                    "value": "[variables('vnetName')]"
-                  },
-                  "subnet1Name": {
-                    "value": "[variables('subnet1Name')]"
-                  },
-                  "subnet2Name": {
-                    "value": "[variables('subnet2Name')]"
-                  }
-              }
+    {
+      "type": "Microsoft.Resources/deployments",
+      "name": "Storage-Template",
+      "dependsOn": [
+        "VNET-Template"
+      ],
+      "apiVersion": "[variables('apiVersion')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('StorageLink')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "namePrefix": {
+            "value": "[parameters('namePrefix')]"
+          },
+          "vnetName": {
+            "value": "[variables('vnetName')]"
+          },
+          "subnet1Name": {
+            "value": "[variables('subnet1Name')]"
+          },
+          "subnet2Name": {
+            "value": "[variables('subnet2Name')]"
           }
+        }
       }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "name": "LogAnalytics-Template",
+      "apiVersion": "[variables('apiVersion')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('LogAnalyticsLink')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "namePrefix": {
+            "value": "[parameters('namePrefix')]"
+          }
+        }
+      }
+    }
   ]
 }
