@@ -3,15 +3,24 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "namePrefix": {
-             "type": "string",
-             "maxLength": 8
+            "type": "string",
+            "maxLength": 8
+        },
+        "vnetName": {
+            "type": "string",
+            "maxLength": 8
+        },
+        "subnet1Name": {
+            "type": "string",
+            "maxLength": 8
+        },
+        "subnet2Name": {
+            "type": "string",
+            "maxLength": 8
         }
     },
     "variables": {
         "storageAccount": "[concat(string(parameters('namePrefix')), 'storcontosotrav')]",
-        "virtualNetworks_VNet1_name": "VNet1",
-        "subnets_Subnet1_name" : "Subnet1",
-        "subnets_Subnet2_name": "Subnet2",
         "location": "[resourceGroup().location]"
     },
     "resources": [
@@ -33,11 +42,11 @@
                     "bypass": "AzureServices",
                     "virtualNetworkRules": [
                         {
-                            "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworks_VNet1_name'), variables('subnets_Subnet1_name'))]",
+                            "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnet1Name'))]",
                             "action": "Allow"
                         },
                         {
-                            "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworks_VNet1_name'), variables('subnets_Subnet2_name'))]",
+                            "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnet2Name'))]",
                             "action": "Allow"
                         }
                     ],

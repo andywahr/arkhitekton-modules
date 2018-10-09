@@ -8,30 +8,60 @@
       }
   },
   "variables": {
+    "vnetName" :"[concat(parameters('namePrefix'),'VNet1')]",
+    "subnet1Name":"Subnet1",
+    "subnet2Name":"Subnet2",
+      "location": "[resourceGroup().location]",
       "apiVersion": "2018-07-01",
       "baseURI": "https://raw.githubusercontent.com/andywahr/arkhitekton-modules/master/ContosoTravel",
-      "VnetLink": "[concat(variables('baseURI'),'/base/vnet/azuredeploy-vnet.json')]",
       "LogAnalyticsLink": "[concat(variables('baseURI'),'/base/loganalytics/azuredeploy-loganalytics.json')]",
       "StorageLink": "[concat(variables('baseURI'),'/base/storage/azuredeploy-storage.json')]"
   },
   "resources": [
-      {
-          "type": "Microsoft.Resources/deployments",
-          "name": "VNET-Template",
-          "apiVersion": "[variables('apiVersion')]",
-          "properties": {
-              "mode": "Incremental",
-              "templateLink": {
-                  "uri": "[variables('VnetLink')]",
-                  "contentVersion": "1.0.0.0"
-              }
+    {
+      "apiVersion": "[variables('apiVersion')]",
+      "type": "Microsoft.Network/virtualNetworks",
+      "name": "[variables('vnetName')]",
+      "location": "[variables('location')]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "10.0.0.0/16"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "[variables('subnet1Name')]",
+            "properties": {
+              "addressPrefix": "10.0.0.0/24",
+              "serviceEndpoints": [
+                {
+                    "service": "Microsoft.Storage"
+                }
+              ]
+            }
+          },
+          {
+            "name": "[variables('subnet2Name')]",
+            "properties": {
+              "addressPrefix": "10.0.1.0/24",
+              "serviceEndpoints": [
+                {
+                    "service": "Microsoft.Storage"
+                }
+              ]
+            }
           }
-      },
+        ],
+        "enableDdosProtection": false,
+        "enableVmProtection": false
+      }
+    },
       {
           "type": "Microsoft.Resources/deployments",
           "name": "Storage-Template",
           "dependsOn": [
-            "VNET-Template"
+            "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]"
           ],
           "apiVersion": "[variables('apiVersion')]",
           "properties": {
@@ -43,6 +73,15 @@
               "parameters": {
                   "namePrefix": {
                       "value": "[parameters('namePrefix')]"
+                  },
+                  "vnetName": {
+                    "value": "[variables('vnetName')]"
+                  },
+                  "subnet1Name": {
+                    "value": "[variables('subnet1Name')]"
+                  },
+                  "subnet2Name": {
+                    "value": "[variables('subnet2Name')]"
                   }
               }
           }
