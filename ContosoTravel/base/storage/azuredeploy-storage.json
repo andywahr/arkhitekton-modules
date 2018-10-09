@@ -8,29 +8,12 @@
         }
     },
     "variables": {
-        "storageAccount": {
-            "defaultValue": "[concat(string(parameters('namePrefix')), 'storcontosotrav')]",
-            "type": "string"
-        },
-        "virtualNetworks_VNet1_name": {
-            "defaultValue": "VNet1",
-            "type": "string"
-        },
-        "subnets_Subnet1_name": {
-            "defaultValue": "Subnet1",
-            "type": "string"
-        },
-        "subnets_Subnet2_name": {
-            "defaultValue": "Subnet2",
-            "type": "string"
-        },
-        "location": {
-          "type": "string",
-          "defaultValue": "[resourceGroup().location]",
-          "metadata": {
-            "description": "Location for all resources."
-          }
-        }},
+        "storageAccount": "[concat(string(parameters('namePrefix')), 'storcontosotrav')]",
+        "virtualNetworks_VNet1_name": "VNet1",
+        "subnets_Subnet1_name" : "Subnet1",
+        "subnets_Subnet2_name": "Subnet2",
+        "location": "[resourceGroup().location]"
+    },
     "resources": [
         {
             "comments": "Storage Account for Contoso Travel",
@@ -40,9 +23,9 @@
                 "tier": "Standard"
             },
             "kind": "StorageV2",
-            "name": "[string(variables('storageAccount'))]",
+            "name": "[variables('storageAccount')]",
             "apiVersion": "2018-07-01",
-            "location": "[string(variables('location'))]",
+            "location": "[variables('location')]",
             "tags": {},
             "scale": null,
             "properties": {
