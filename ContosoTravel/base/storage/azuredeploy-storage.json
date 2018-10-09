@@ -57,11 +57,7 @@
                     "keySource": "Microsoft.Storage"
                 },
                 "accessTier": "Hot"
-            },
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworks_VNet1_name'), variables('subnets_Subnet1_name'))]",
-                "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworks_VNet1_name'), variables('subnets_Subnet2_name'))]"
-            ]
+            }
         }
     ]
 }

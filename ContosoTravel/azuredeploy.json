@@ -30,6 +30,9 @@
       {
           "type": "Microsoft.Resources/deployments",
           "name": "Storage-Template",
+          "dependsOn": [
+            "VNET-Template"
+          ],
           "apiVersion": "[variables('apiVersion')]",
           "properties": {
               "mode": "Incremental",
