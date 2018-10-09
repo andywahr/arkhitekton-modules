@@ -42,7 +42,7 @@
             "kind": "StorageV2",
             "name": "[string(variables('storageAccount'))]",
             "apiVersion": "2018-07-01",
-            "location": "[variables('location')]",
+            "location": "[string(variables('location'))]",
             "tags": {},
             "scale": null,
             "properties": {
