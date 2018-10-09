@@ -40,7 +40,7 @@
                 "tier": "Standard"
             },
             "kind": "StorageV2",
-            "name": "[variables('storageAccount')]",
+            "name": "[string(variables('storageAccount'))]",
             "apiVersion": "2018-07-01",
             "location": "[variables('location')]",
             "tags": {},
