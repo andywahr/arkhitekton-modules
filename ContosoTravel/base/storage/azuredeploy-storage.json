@@ -42,7 +42,7 @@
             "kind": "StorageV2",
             "name": "[variables('storageAccount')]",
             "apiVersion": "2018-07-01",
-            "location": "[parameters('location')]",
+            "location": "[variables('location')]",
             "tags": {},
             "scale": null,
             "properties": {
@@ -50,11 +50,11 @@
                     "bypass": "AzureServices",
                     "virtualNetworkRules": [
                         {
-                            "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_VNet1_name'), parameters('subnets_Subnet1_name'))]",
+                            "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworks_VNet1_name'), variables('subnets_Subnet1_name'))]",
                             "action": "Allow"
                         },
                         {
-                            "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_VNet1_name'), parameters('subnets_Subnet2_name'))]",
+                            "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworks_VNet1_name'), variables('subnets_Subnet2_name'))]",
                             "action": "Allow"
                         }
                     ],
@@ -76,8 +76,8 @@
                 "accessTier": "Hot"
             },
             "dependsOn": [
-                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_VNet1_name'), parameters('subnets_Subnet1_name'))]",
-                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_VNet1_name'), parameters('subnets_Subnet2_name'))]"
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworks_VNet1_name'), variables('subnets_Subnet1_name'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworks_VNet1_name'), variables('subnets_Subnet2_name'))]"
             ]
         }
     ]
