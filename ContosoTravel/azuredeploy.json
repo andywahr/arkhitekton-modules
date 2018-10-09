@@ -5,14 +5,12 @@
   "variables": {
     "baseURI": "https://raw.githubusercontent.com/andywahr/arkhitekton-modules/master/ContosoTravel",
     "VnetLink": "[concat(variables('baseURI'),'/base/vnet/azuredeploy-vnet.json')]",
-    "LogAnalyticsLink": "[concat(variables('baseURI'),'/base/loganalytics/azuredeploy-loganalytics.json')]"
-    //"AppInsightsLink": "[concat(variables('baseURI'),'/base/appinsights/azuredeploy-appinsights.json')]"
+    "StorageLink": "[concat(variables('baseURI'),'/base/storage/azuredeploy-storage.json')]"
   },
   "resources": [
     {
       "name": "VNET-Template",
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2016-09-01",
       "dependsOn": [],
       "properties": {
         "mode": "Incremental",
@@ -23,15 +21,12 @@
       }
     },
     {
-      "name": "Log-Analytics-Template",
-      "type": "Microsoft.OperationalInsights/workspaces",
-      "apiVersion": "2017-03-15-preview",
-      "location": "East US",
-      "dependsOn": [],
+      "name": "Storage-Template",
+      "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[variables('LogAnalyticsLink')]",
+          "uri": "[variables('StorageLink')]",
           "contentVersion": "1.0.0.0"
         }
       }

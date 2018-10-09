@@ -1,0 +1,84 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "namePrefix": {
+             "type": "string",
+             "maxLength": 8
+        },
+        "location": {
+          "type": "string",
+          "defaultValue": "[resourceGroup().location]",
+          "metadata": {
+            "description": "Location for all resources."
+          }
+        }
+    },
+    "variables": {
+        "storageAccount": {
+            "defaultValue": "[concat(parameters('namePrefix'), 'storcontosotrav')]",
+            "type": "string"
+        },
+        "virtualNetworks_VNet1_name": {
+            "defaultValue": "VNet1",
+            "type": "string"
+        },
+        "subnets_Subnet1_name": {
+            "defaultValue": "Subnet1",
+            "type": "string"
+        },
+        "subnets_Subnet2_name": {
+            "defaultValue": "Subnet2",
+            "type": "string"
+        }},
+    "resources": [
+        {
+            "comments": "Storage Account for Contoso Travel",
+            "type": "Microsoft.Storage/storageAccounts",
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+            "kind": "StorageV2",
+            "name": "[parameters('storageAccount')]",
+            "apiVersion": "2018-07-01",
+            "location": "[parameters('location')]",
+            "tags": {},
+            "scale": null,
+            "properties": {
+                "networkAcls": {
+                    "bypass": "AzureServices",
+                    "virtualNetworkRules": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_VNet1_name'), parameters('subnets_Subnet1_name'))]",
+                            "action": "Allow"
+                        },
+                        {
+                            "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_VNet1_name'), parameters('subnets_Subnet2_name'))]",
+                            "action": "Allow"
+                        }
+                    ],
+                    "ipRules": [],
+                    "defaultAction": "Deny"
+                },
+                "supportsHttpsTrafficOnly": true,
+                "encryption": {
+                    "services": {
+                        "file": {
+                            "enabled": true
+                        },
+                        "blob": {
+                            "enabled": true
+                        }
+                    },
+                    "keySource": "Microsoft.Storage"
+                },
+                "accessTier": "Hot"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_VNet1_name'), parameters('subnets_Subnet1_name'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_VNet1_name'), parameters('subnets_Subnet2_name'))]"
+            ]
+        }
+    ]
+}
