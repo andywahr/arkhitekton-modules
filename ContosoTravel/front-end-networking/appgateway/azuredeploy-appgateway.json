@@ -1,0 +1,199 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "namePrefix": {
+            "type": "string",
+            "maxLength": 8
+        },
+        "frontResource": {
+            "type": "string",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
+        },
+        "vnetName": {
+            "type": "string"
+        },
+        "subnet1Name": {
+            "type": "string"
+        },
+        "webSiteFQDN": {
+            "type": "string"
+        },
+        "logAnalyticsName": {
+            "type": "string"
+        }
+    },
+    "variables": {
+        "dnsLabel": "[if(equals(parameters('frontResource'), 'Yes'), 'www', 'waf')]",
+        "dnsName": "[concat(variables('dnsLabel'), '-', parameters('namePrefix'), '-contosotravel')]",
+        "location": "[resourceGroup().location]",
+        "pipName": "[concat(parameters('namePrefix'), 'wafappgateway-pip')]",
+        "analyticsName": "[concat(parameters('namePrefix'), 'wafappgateway-analytics')]",
+        "applicationGatewayID": "[resourceId('Microsoft.Network/applicationGateways',concat(parameters('namePrefix'), 'wafappgateway'))]"
+    },
+    "resources": [
+        {
+            "comments": "Generalized from resource: WAF App Gateway",
+            "type": "Microsoft.Network/applicationGateways",
+            "name": "[concat(parameters('namePrefix'), 'wafappgateway')]",
+            "apiVersion": "2017-10-01",
+            "location": "[variables('location')]",
+            "scale": null,
+            "properties": {
+                "provisioningState": "Succeeded",
+                "sku": {
+                    "name": "WAF_Medium",
+                    "tier": "WAF",
+                    "capacity": 2
+                },
+                "gatewayIPConfigurations": [
+                    {
+                        "name": "appGatewayIpConfig",
+                        "properties": {
+                            "subnet": {
+                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnet1Name'))]"
+                            }
+                        }
+                    }
+                ],
+                "sslCertificates": [],
+                "authenticationCertificates": [],
+                "frontendIPConfigurations": [
+                    {
+                        "name": "appGatewayFrontendIP",
+                        "properties": {
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('pipName'))]"
+                            }
+                        }
+                    }
+                ],
+                "frontendPorts": [
+                    {
+                        "name": "appGatewayFrontendPort",
+                        "properties": {
+                            "port": 80
+                        }
+                    }
+                ],
+                "backendAddressPools": [
+                    {
+                        "name": "appGatewayBackendPool",
+                        "properties": {
+                            "backendAddresses": [
+                                {
+                                    "fqdn": "[parameters('webSiteFQDN')]"
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "backendHttpSettingsCollection": [
+                    {
+                        "name": "appGatewayBackendHttpSettings",
+                        "properties": {
+                            "port": 80,
+                            "protocol": "Http",
+                            "cookieBasedAffinity": "Disabled",
+                            "pickHostNameFromBackendAddress": false,
+                            "requestTimeout": 30
+                        }
+                    }
+                ],
+                "httpListeners": [
+                    {
+                        "name": "appGatewayHttpListener",
+                        "properties": {
+                            "frontendIPConfiguration": {
+                                "id": "[concat(variables('applicationGatewayID'), '/frontendIPConfigurations/appGatewayFrontendIP')]"
+                            },
+                            "frontendPort": {
+                                "id": "[concat(variables('applicationGatewayID'), '/frontendPorts/appGatewayFrontendPort')]"
+                            },
+                            "protocol": "Http",
+                            "requireServerNameIndication": false
+                        }
+                    }
+                ],
+                "urlPathMaps": [],
+                "requestRoutingRules": [
+                    {
+                        "name": "HTTPRule",
+                        "properties": {
+                            "ruleType": "Basic",
+                            "httpListener": {
+                                "id": "[concat(variables('applicationGatewayID'), '/httpListeners/appGatewayHttpListener')]"
+                            },
+                            "backendAddressPool": {
+                                "id": "[concat(variables('applicationGatewayID'), '/backendAddressPools/appGatewayBackendPool')]"
+                            },
+                            "backendHttpSettings": {
+                                "id": "[concat(variables('applicationGatewayID'), '/backendHttpSettingsCollection/appGatewayBackendHttpSettings')]"
+                            }
+                        }
+                    }
+                ],
+                "probes": [],
+                "redirectConfigurations": [],
+                "webApplicationFirewallConfiguration": {
+                    "enabled": true,
+                    "firewallMode": "Detection",
+                    "ruleSetType": "OWASP",
+                    "ruleSetVersion": "3.0",
+                    "disabledRuleGroups": []
+                },
+                "enableHttp2": false
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses', variables('pipName'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: WAF PIP",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "sku": {
+                "name": "Basic",
+                "tier": "Regional"
+            },
+            "name": "[variables('pipName')]",
+            "apiVersion": "2017-10-01",
+            "location": "[variables('location')]",
+            "scale": null,
+            "properties": {
+                "publicIPAddressVersion": "IPv4",
+                "publicIPAllocationMethod": "Dynamic",
+                "idleTimeoutInMinutes": 4,
+                "dnsSettings": {
+                    "domainNameLabel": "[variables('dnsName')]",
+                    "fqdn": "[concat(variables('dnsLabel'), '-', variables('location'), '.cloudapp.azure.com')]"
+                },
+                "ipTags": []
+            },
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: AzureAppGatewayAnalytics.",
+            "type": "Microsoft.OperationsManagement/solutions",
+            "name": "[variables('analyticsName')]",
+            "apiVersion": "2015-11-01-preview",
+            "location": "East US",
+            "plan": {
+                "name": "[variables('analyticsName')]",
+                "promotionCode": "",
+                "product": "OMSGallery/AzureAppGatewayAnalytics",
+                "publisher": "Microsoft"
+            },
+            "scale": null,
+            "properties": {
+                "workspaceResourceId": "[resourceId('microsoft.operationalinsights/workspaces', parameters('logAnalyticsName'))]",
+                "containedResources": [
+                    "[concat(string(resourceId('microsoft.operationalinsights/workspaces', parameters('logAnalyticsName'))), '/views/', variables('analyticsName'))]"
+                ]
+            }
+        }
+    ]
+}

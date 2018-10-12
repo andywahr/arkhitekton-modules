@@ -1,0 +1,36 @@
+{
+    "type": "Microsoft.Resources/deployments",
+    "name": "AppGateway-Template",
+    "dependsOn": [
+      "WebSite-Template",
+      "LogAnalytics-Template"
+    ],
+    "apiVersion": "[variables('apiVersion')]",
+    "properties": {
+      "mode": "Incremental",
+      "templateLink": {
+        "uri": "[concat(variables('baseURI'),'/front-end-networking/appgateway/azuredeploy-appgateway.json')]",
+        "contentVersion": "1.0.0.0"
+      },
+      "parameters": {
+        "namePrefix": {
+          "value": "[parameters('namePrefix')]"
+        },
+        "frontResource": {
+          "value": "Yes"
+        },
+        "vnetName": {
+          "value": "[variables('vnetName')]"
+        },
+        "subnet1Name": {
+          "value": "[variables('subnet1Name')]"
+        },
+        "webSiteFQDN": {
+          "value": "[variables('hostNameBindings')]"
+        },
+        "logAnalyticsName" :{
+          "value": "[reference('LogAnalytics-Template').outputs.logAnalyticsName.value]"
+        }
+      }
+    }
+  }

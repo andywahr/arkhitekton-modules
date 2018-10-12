@@ -1,0 +1,40 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "namePrefix": {
+            "type": "string",
+            "maxLength": 8
+        }
+    },
+    "variables": {
+        "siteName" : "[concat(parameters('namePrefix'), '-appInsight-ContosoTravel')]",
+        "location": "[resourceGroup().location]"
+
+    },
+    "resources": [
+        {
+            "comments": "Generalized from resource: App Insights Component.",
+            "type": "microsoft.insights/components",
+            "kind": "web",
+            "name": "[variables('siteName')]",
+            "apiVersion": "2015-05-01",
+            "location": "[variables('location')]",
+            "scale": null,
+            "properties": {
+                "Application_Type": "other",
+                "Flow_Type": "Redfield",
+                "Request_Source": "IbizaAIExtension",
+                "HockeyAppId": null,
+                "SamplingPercentage": null
+            },
+            "dependsOn": []
+        }
+    ],
+    "outputs": {
+        "appInsightInstrumentationKey": {
+            "value": "[string(reference(resourceId('Microsoft.Insights/components', variables('siteName')), '2014-04-01').InstrumentationKey)]",
+            "type": "string"
+        }
+    }
+}

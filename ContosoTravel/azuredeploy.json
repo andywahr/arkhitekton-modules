@@ -13,12 +13,32 @@
     "subnet2Name": "Subnet2",
     "location": "[resourceGroup().location]",
     "apiVersion": "2018-07-01",
+    "siteName": "[concat('contosotravel-', parameters('namePrefix'))]",
+    "hostNameBindings": "[concat(variables('siteName'), '.azurewebsites.net')]",
     "baseURI": "https://andywahrstorapps.blob.core.windows.net/contosotravel",
     "LogAnalyticsLink": "[concat(variables('baseURI'),'/base/loganalytics/azuredeploy-loganalytics.json')]",
     "StorageLink": "[concat(variables('baseURI'),'/base/storage/azuredeploy-storage.json')]",
-    "VNETLink": "[concat(variables('baseURI'),'/base/vnet/azuredeploy-vnet.json')]"
+    "VNETLink": "[concat(variables('baseURI'),'/base/vnet/azuredeploy-vnet.json')]",
+    "AppInsightsLink": "[concat(variables('baseURI'),'/base/appinsights/azuredeploy-appinsights.json')]"
   },
-  "resources": [
+  "resources": [    
+    {
+      "type": "Microsoft.Resources/deployments",
+      "name": "LogAnalytics-Template",
+      "apiVersion": "[variables('apiVersion')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('LogAnalyticsLink')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "namePrefix": {
+            "value": "[parameters('namePrefix')]"
+          }
+        }
+      }
+    },
     {
       "type": "Microsoft.Resources/deployments",
       "name": "VNET-Template",
@@ -73,12 +93,12 @@
     },
     {
       "type": "Microsoft.Resources/deployments",
-      "name": "LogAnalytics-Template",
+      "name": "AppInsights-Template",
       "apiVersion": "[variables('apiVersion')]",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[variables('LogAnalyticsLink')]",
+          "uri": "[variables('AppInsightsLink')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
