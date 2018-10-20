@@ -99,8 +99,12 @@
                             "port": 80,
                             "protocol": "Http",
                             "cookieBasedAffinity": "Disabled",
-                            "pickHostNameFromBackendAddress": false,
-                            "requestTimeout": 30
+                            "pickHostNameFromBackendAddress": true,
+                            "path": null,
+                            "requestTimeout": 30,
+                            "probe": {
+                                "id": "[concat(variables('applicationGatewayID'), '/probes/HTTPProb')]"
+                            }
                         }
                     }
                 ],
@@ -137,7 +141,27 @@
                         }
                     }
                 ],
-                "probes": [],
+                "probes": [
+                    {
+                        "name": "HTTPProb",
+                        "properties": {
+                            "protocol": "Http",
+                            "path": "/",
+                            "interval": 30,
+                            "timeout": 30,
+                            "unhealthyThreshold": 3,
+                            "pickHostNameFromBackendHttpSettings": true,
+                            "minServers": 0,
+                            "match": {
+                                "body": "",
+                                "statusCodes": [
+                                    "200-399"
+                                ]
+                            }
+                        },
+                        "type": "Microsoft.Network/applicationGateways/probes"
+                    }
+                ],
                 "redirectConfigurations": [],
                 "webApplicationFirewallConfiguration": {
                     "enabled": true,
