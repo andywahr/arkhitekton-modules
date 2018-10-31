@@ -1,0 +1,87 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "namePrefix": {
+            "maxLength": 8,
+            "type": "string"
+        }
+    },
+    "variables": {
+        "location": "[resourceGroup().location]",
+        "serviceBusName": "[concat('sb-', parameters('namePrefix'), '-contosotravel')]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.ServiceBus/namespaces",
+            "sku": {
+                "name": "Basic",
+                "tier": "Basic"
+            },
+            "name": "[variables('serviceBusName')]",
+            "apiVersion": "2017-04-01",
+            "location": "[variables('location')]",
+            "kind": "Messaging",
+            "tags": {},
+            "resources": [
+                {
+                    "apiVersion": "2017-04-01",
+                    "name": "PurchaseItinerary",
+                    "type": "queues",
+                    "dependsOn": [
+                        "[concat('Microsoft.ServiceBus/namespaces/', parameters('serviceBusName'))]"
+                    ],
+                    "properties": {
+                        "path": "PurchaseItinerary"                      
+                    },
+                    "resources": [
+                        {
+                            "apiVersion": "2017-04-01",
+                            "name": "PurchaseItinerary-Reader",
+                            "type": "authorizationRules",
+                            "dependsOn": [
+                                "PurchaseItinerary"
+                            ],
+                            "properties": {
+                                "rights": ["Listen"],
+                                "keyName": "[PurchaseItineraryReadKey')]",
+                                "claimType": "SharedAccessKey",
+                                "claimValue": "None",
+                                "revision": -1  
+                            }
+                        },
+                        {
+                            "apiVersion": "2017-04-01",
+                            "name": "PurchaseItinerary-Writer",
+                            "type": "authorizationRules",
+                            "dependsOn": [
+                                "PurchaseItinerary"
+                            ],
+                            "properties": {
+                                "rights": ["Send"],
+                                "keyName": "[PurchaseItinerarySendKey')]",
+                                "claimType": "SharedAccessKey",
+                                "claimValue": "None",
+                                "revision": -1  
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "outputs": {
+        "serviceAccountName": {
+            "type": "string",
+            "value": "[string(variables('serviceBusName'))]"
+        },
+        "serviceType": {
+            "type": "string",
+            "value": "ServiceBus"
+        },
+        "serviceConnectionString" : {
+            "type":"string",
+            "value": "[listKeys(resourceId(concat('Microsoft.ServiceBus/namespaces/Queues/AuthorizationRules/', variables('serviceBusName')), 'PurchaseItinerary','PurchaseItinerary-Reader'),'2015-08-01').primaryConnectionString, '')]"
+        }
+    }
+}

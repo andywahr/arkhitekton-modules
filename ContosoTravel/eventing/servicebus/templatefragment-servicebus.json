@@ -1,0 +1,18 @@
+{
+    "type": "Microsoft.Resources/deployments",
+    "name": "Eventing-Template",
+    "dependsOn": [],
+    "apiVersion": "[variables('apiVersion')]",
+    "properties": {
+      "mode": "Incremental",
+      "templateLink": {
+        "uri": "[concat(variables('baseURI'),'/eventing/servicebus/azuredeploy-servicebus.json')]",
+        "contentVersion": "1.0.0.0"
+      },
+      "parameters": {
+        "namePrefix": {
+          "value": "[parameters('namePrefix')]"
+        }
+      }
+    }
+  }

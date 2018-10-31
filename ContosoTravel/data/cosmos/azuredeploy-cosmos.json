@@ -1,0 +1,46 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "namePrefix": {
+            "maxLength": 8,
+            "type": "string"
+        }
+    },
+    "variables": {
+        "dataAccountName": "[concat(parameters('namePrefix'), '-cosmossql')]",
+        "location": "[resourceGroup().location]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.DocumentDB/databaseAccounts",
+            "kind": "GlobalDocumentDB",
+            "name": "[variables('dataAccountName')]",
+            "apiVersion": "2015-04-08",
+            "location": "[variables('location')]",
+            "tags": {
+                "defaultExperience": "DocumentDB"
+            },
+            "properties": {
+                "databaseAccountOfferType": "Standard",
+                "consistencyPolicy": {
+                    "defaultConsistencyLevel": "Session",
+                    "maxIntervalInSeconds": 5,
+                    "maxStalenessPrefix": 100
+                },
+                "name": "[variables('dataAccountName')]"
+            },
+            "dependsOn": []
+        }
+    ],
+    "outputs": {
+        "dataAccountName": {
+            "type": "string",
+            "value": "[variables('dataAccountName')]"
+        },
+        "dataType": {
+            "type": "string",
+            "value": "CosmosSQL"
+        }
+    }
+}

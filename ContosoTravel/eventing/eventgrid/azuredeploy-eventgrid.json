@@ -1,0 +1,37 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "namePrefix": {
+      "maxLength": 8,
+      "type": "string"
+    }
+  },
+  "variables": {
+    "location": "[resourceGroup().location]",
+    "eventGridName": "[concat('eg-', parameters('namePrefix'), '-contosotravel')]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.EventGrid/topics",
+      "name": "[variables('eventGridName')]",
+      "apiVersion": "2018-01-01",
+      "location": "[variables('location')]",
+      "scale": null,
+      "properties": {
+        "inputSchema": "EventGridSchema"
+      },
+      "dependsOn": []
+    }
+  ],
+  "outputs": {
+    "serviceAccountName": {
+      "type": "string",
+      "value": "[string(variables('eventGridName'))]"
+    },
+    "serviceType": {
+      "type": "string",
+      "value": "string('EventGrid')"
+    }
+  }
+}

@@ -1,0 +1,137 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "namePrefix": {
+            "maxLength": 8,
+            "type": "string"
+        },
+        "serviceName": {
+            "type": "string"
+        },
+        "appInsightInstrumentationKey": {
+            "type": "string"
+        },
+        "keyVaultUrl" : {
+            "type": "string"
+        },
+        "serviceType": {
+            "type": "string"
+        },
+        "serviceAccountName": {
+            "type": "string"
+        },
+        "serviceBusConnectionString": {
+            "type": "string",
+            "defaultValue": ""
+        }
+    },
+    "variables": {
+        "functionAppName": "[parameters('serviceName')]",
+        "hostingPlanName": "[concat('asp-',variables('functionAppName'))]",
+        "storageAccountName": "[concat(string(parameters('namePrefix')), 'storcontosotrav')]",
+        "storageAccountid": "[concat(resourceGroup().id,'/providers/','Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
+        "location": "[resourceGroup().location]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Web/serverfarms",
+
+            "apiVersion": "2016-09-01",
+            "name": "[variables('hostingPlanName')]",
+            "location": "[variables('location')]",
+            "properties": {
+                "name": "[variables('hostingPlanName')]",
+                "computeMode": "Dynamic",
+                "sku": "Dynamic"
+              }
+        },
+        {
+            "apiVersion": "2016-08-01",
+            "type": "Microsoft.Web/sites",
+            "name": "[variables('functionAppName')]",
+            "location": "[variables('location')]",
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "kind": "functionapp",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]"
+            ],
+            "properties": {
+                "enabled": true,
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]",
+                "siteConfig": {
+                    "appSettings": [
+                        {
+                            "name": "AzureWebJobsDashboard",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(variables('storageAccountid'),'2015-05-01-preview').key1)]"
+                        },
+                        {
+                            "name": "AzureWebJobsStorage",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(variables('storageAccountid'),'2015-05-01-preview').key1)]"
+                        },
+                        {
+                            "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(variables('storageAccountid'),'2015-05-01-preview').key1)]"
+                        },
+                        {
+                            "name": "WEBSITE_CONTENTSHARE",
+                            "value": "[toLower(variables('functionAppName'))]"
+                        },
+                        {
+                            "name": "FUNCTIONS_EXTENSION_VERSION",
+                            "value": "~2"
+                        },
+                        {
+                            "name": "WEBSITE_NODE_DEFAULT_VERSION",
+                            "value": "8.11.1"
+                        },
+                        {
+                            "name": "FUNCTIONS_WORKER_RUNTIME",
+                            "value": "dotnet"
+                        },
+                        {
+                            "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                            "value": "[parameters('appInsightInstrumentationKey')]"
+                        },
+                        {
+                            "name": "KeyVaultUrl",
+                            "value": "[parameters('keyVaultUrl')]"
+                        },
+                        {
+                            "name": "ServiceBusConnection",
+                            "value": "[parameters('serviceBusConnectionString')]"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "[concat(parameters('serviceAccountName'), '/Microsoft.EventGrid/',concat(variables('functionAppName'),'-PurchaseItineraryEventGrid'))]",
+            "type": "Microsoft.EventGrid/topics/providers/eventSubscriptions",
+            "condition": "[equals(parameters('serviceType'), 'EventGrid')]",
+            "location": "[variables('location')]",
+            "apiVersion": "2018-01-01",
+            "properties": {
+                "destination": {
+                    "endpointType": "WebHook",
+                    "properties": {
+                        "endpointUrl": "[concat('https://', variables('functionAppName'),'.azurewebsites.net/runtime/webhooks/eventgrid?functionName=PurchaseItineraryEventGrid')]"
+                    }
+                },
+                "filter": {
+                    "includedEventTypes": [
+                        "All"
+                    ]
+                }
+            }
+        }
+    ],
+    "outputs": {
+        "serviceMSI": {
+            "type": "object",
+            "value": "[reference(concat(resourceId('Microsoft.Web/sites', variables('functionAppName')),'/providers/Microsoft.ManagedIdentity/Identities/default'), '2015-08-31-PREVIEW')]"
+        }
+    }
+}

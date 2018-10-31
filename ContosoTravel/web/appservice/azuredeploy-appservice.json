@@ -14,10 +14,13 @@
         },
         "webSiteFQDN": {
             "type": "string"
+        },
+        "keyVaultUrl" : {
+            "type": "string"
         }
     },
     "variables": {
-        "serverfarm": "[concat(parameters('namePrefix'), 'aspcontosotravel')]",
+        "serverfarm": "[concat('asp-', parameters('siteName'))]",
         "location": "[resourceGroup().location]"
     },
     "resources": [
@@ -55,6 +58,9 @@
             "name": "[parameters('siteName')]",
             "apiVersion": "2016-08-01",
             "location": "[variables('location')]",
+            "identity": {
+                "type": "SystemAssigned"
+            },
             "scale": null,
             "properties": {
                 "enabled": true,
@@ -142,6 +148,10 @@
                     {
                         "name": "APPINSIGHTS_PORTALINFO",
                         "value": "ASP.NETCORE"
+                    },
+                    {
+                        "name": "KeyVaultUrl",
+                        "value": "[parameters('keyVaultUrl')]"
                     }
                 ],
                 "azureStorageAccounts": {},
@@ -246,6 +256,10 @@
         "webSiteFQDN": {
             "type": "string",
             "value": "[string(parameters('webSiteFQDN'))]"
+        },
+        "webMSI" : {
+            "type": "object",
+            "value": "[reference(concat(resourceId('Microsoft.Web/sites', parameters('siteName')),'/providers/Microsoft.ManagedIdentity/Identities/default'), '2015-08-31-PREVIEW')]"
         }
     }
 }

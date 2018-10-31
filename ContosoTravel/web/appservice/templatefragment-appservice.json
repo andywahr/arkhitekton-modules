@@ -23,6 +23,9 @@
         },
         "siteName": {
           "value": "[variables('siteName')]"
+        },
+        "keyVaultUrl" : {
+            "value": "[variables('keyVaultUrl')]"
         }
       }
     }

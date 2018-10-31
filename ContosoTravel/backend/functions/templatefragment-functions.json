@@ -1,0 +1,39 @@
+{
+  "type": "Microsoft.Resources/deployments",
+  "name": "Service-Template",
+  "dependsOn": [
+    "AppInsights-Template",
+    "Eventing-Template"
+  ],
+  "apiVersion": "[variables('apiVersion')]",
+  "properties": {
+    "mode": "Incremental",
+    "templateLink": {
+      "uri": "[concat(variables('baseURI'),'/backend/functions/azuredeploy-functions.json')]",
+      "contentVersion": "1.0.0.0"
+    },
+    "parameters": {
+      "namePrefix": {
+        "value": "[parameters('namePrefix')]"
+      },
+      "appInsightInstrumentationKey": {
+        "value": "[string(reference('AppInsights-Template').outputs.appInsightInstrumentationKey.value)]"
+      },
+      "serviceName": {
+        "value": "[variables('serviceName')]"
+      },
+      "serviceType": {
+        "value": "[reference('Eventing-Template').outputs.serviceType]"
+      },
+      "serviceAccountName": {
+        "value": "[reference('Eventing-Template').outputs.serviceAccountName]"
+      },
+      "keyVaultUrl": {
+        "value": "[variables('keyVaultUrl')]"
+      },
+      "serviceBusConnectionString": {
+        "value": "[if(equals(reference('Eventing-Template').outputs.serviceType, 'ServiceBus'), reference('Eventing-Template').outputs.serviceConnectionString, '')]"
+      }
+    }
+  }
+}

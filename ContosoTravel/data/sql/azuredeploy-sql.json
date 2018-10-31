@@ -1,0 +1,104 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "namePrefix": {
+        "type": "string",
+        "maxLength": 8
+      },
+      "dataAdministratorLoginPassword": {
+        "type": "string",
+        "metadata": {
+          "description": "The administrator password of the SQL Server."
+        }
+      },
+      "dataAdministratorLogin": {
+        "type": "string",
+        "metadata": {
+          "description": "The administrator password of the SQL Server."
+        }
+      }
+    },
+    "variables": {
+      "sqlServerName": "[concat('contosotravel-sqlserver-', parameters('namePrefix'))]",
+      "databaseName": "ContosoTravel",
+      "location": "[resourceGroup().location]"
+    },
+    "resources": [
+      {
+        "name": "[variables('sqlServerName')]",
+        "type": "Microsoft.Sql/servers",
+        "kind": "v12.0",
+        "apiVersion": "2014-04-01",
+        "location": "[variables('location')]",
+        "sku": {
+            "name": "S0",
+            "tier": "Standard"
+        },
+        "tags": {
+          "displayName": "SqlServer"
+        },
+        "properties": {
+          "administratorLogin": "[parameters('dataAdministratorLogin')]",
+          "administratorLoginPassword": "[parameters('dataAdministratorLoginPassword')]",
+          "version": "12.0"
+        },
+        "resources": [
+          {
+            "name": "[variables('databaseName')]",
+            "type": "databases",
+            "apiVersion": "2014-04-01",
+            "location": "[variables('location')]",
+            "tags": {
+              "displayName": "Database"
+            },
+            "properties": {
+              "edition": "Standard",
+              "collation": "SQL_Latin1_General_CP1_CI_AS",
+              "requestedServiceObjectiveName": "S0"
+            },
+            "dependsOn": [
+              "[variables('sqlServerName')]"
+            ],
+            "resources": [
+              {
+                "comments": "Transparent Data Encryption",
+                "name": "current",
+                "type": "transparentDataEncryption",
+                "apiVersion": "2014-04-01",
+                "properties": {
+                  "status": "Enabled"
+                },
+                "dependsOn": [
+                  "[variables('databaseName')]"
+                ]
+              }
+            ]
+          },
+          {
+            "name": "AllowAllMicrosoftAzureIps",
+            "type": "firewallRules",
+            "apiVersion": "2014-04-01",
+            "location": "[variables('location')]",
+            "properties": {
+              "endIpAddress": "0.0.0.0",
+              "startIpAddress": "0.0.0.0"
+            },
+            "dependsOn": [
+              "[variables('sqlServerName')]"
+            ]
+          }
+        ]
+      }
+    ],
+    "outputs": {
+        "dataAccountName": {
+            "type": "string",
+            "value": "[variables('sqlServerName')]"
+        },
+        "dataType": {
+            "type": "string",
+            "value": "SQL"
+        }
+    }
+  }

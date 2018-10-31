@@ -14,12 +14,18 @@
     "location": "[resourceGroup().location]",
     "apiVersion": "2018-07-01",
     "siteName": "[concat('contosotravel-', parameters('namePrefix'))]",
+    "serviceName": "[concat('contosotravel-', parameters('namePrefix'), '-service')]",
     "hostNameBindings": "[concat(variables('siteName'), '.azurewebsites.net')]",
     "baseURI": "https://andywahrstorapps.blob.core.windows.net/contosotravel",
     "LogAnalyticsLink": "[concat(variables('baseURI'),'/base/loganalytics/azuredeploy-loganalytics.json')]",
     "StorageLink": "[concat(variables('baseURI'),'/base/storage/azuredeploy-storage.json')]",
     "VNETLink": "[concat(variables('baseURI'),'/base/vnet/azuredeploy-vnet.json')]",
-    "AppInsightsLink": "[concat(variables('baseURI'),'/base/appinsights/azuredeploy-appinsights.json')]"
+    "AppInsightsLink": "[concat(variables('baseURI'),'/base/appinsights/azuredeploy-appinsights.json')]",
+    "KeyVaultLink": "[concat(variables('baseURI'),'/base/keyvault/azuredeploy-keyvault.json')]",
+    "keyVaultName": "[concat(parameters('namePrefix'), '-keyvault')]",
+    "keyVaultUrl":"[concat('https://', variables('keyVaultName'), '.vault.azure.net/')]",
+    "dataAdministratorLogin":"[concat('U', uniqueString(resourceGroup().id, 'a72a1444-c799-4b70-9d69-f4985d15d372'), '#', '@')]",
+    "dataAdministratorLoginPasssword":"[concat('P', uniqueString(resourceGroup().id, '29cd7b98-f860-47e5-b284-206eb7de4505'), 'x', '!')]"
   },
   "resources": [    
     {
@@ -99,6 +105,161 @@
         "mode": "Incremental",
         "templateLink": {
           "uri": "[variables('AppInsightsLink')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "namePrefix": {
+            "value": "[parameters('namePrefix')]"
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "name": "KeyVault-Template",
+      "dependsOn": [
+        "WebSite-Template",
+        "Service-Template",
+        "Eventing-Template",
+        "Data-Template"
+      ],
+      "apiVersion": "[variables('apiVersion')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('KeyVault')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "keyVaultName": {
+            "value": "[variables('keyVaultName')]"
+          },
+          "webMSI": {
+            "value": "[reference('WebSite-Template').outputs.webMSI]"
+          },
+          "serviceMSI":{
+            "value": "[reference('Service-Template').outputs.serviceMSI]"
+          },
+          "serviceType": {
+            "value": "[string(reference('Eventing-Template').outputs.serviceType)]"
+          },
+          "serviceAccountName": {
+            "value": "[string(reference('Eventing-Template').outputs.serviceAccountName)]"
+          },
+          "dataAccountName": {
+            "value": "[string(reference('Data-Template').outputs.dataAccountName)]"
+          },
+          "dataType": {
+            "value": "[string(reference('Data-Template').outputs.dataType)]"
+          },
+          "dataAdministratorLoginPassword": {
+            "value": "[variables('dataAdministratorLoginPassword')]"
+          } ,
+          "dataAdministratorLogin": {
+            "value": "[variables('dataAdministratorLogin')]"
+          }  
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "name": "WebSite-Template",
+      "dependsOn": [
+        "AppInsights-Template"
+      ],
+      "apiVersion": "[variables('apiVersion')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('baseURI'),'/web/appservice/azuredeploy-appservice.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "namePrefix": {
+            "value": "[parameters('namePrefix')]"
+          },
+          "appInsightInstrumentationKey": {
+            "value": "[string(reference('AppInsights-Template').outputs.appInsightInstrumentationKey.value)]"
+          },
+          "webSiteFQDN": {
+            "value": "[variables('hostNameBindings')]"
+          },
+          "siteName": {
+            "value": "[variables('siteName')]"
+          },
+          "keyVaultUrl" : {
+              "value": "[variables('keyVaultUrl')]"
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "name": "Eventing-Template",
+      "dependsOn": [],
+      "apiVersion": "[variables('apiVersion')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('baseURI'),'/eventing/eventgrid/azuredeploy-eventgrid.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "namePrefix": {
+            "value": "[parameters('namePrefix')]"
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "name": "Service-Template",
+      "dependsOn": [
+        "AppInsights-Template",
+        "Eventing-Template",
+        "Storage-Template"
+      ],
+      "apiVersion": "[variables('apiVersion')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('baseURI'),'/backend/functions/azuredeploy-functions.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "namePrefix": {
+            "value": "[parameters('namePrefix')]"
+          },
+          "appInsightInstrumentationKey": {
+            "value": "[string(reference('AppInsights-Template').outputs.appInsightInstrumentationKey.value)]"
+          },
+          "serviceName": {
+            "value": "[variables('serviceName')]"
+          },
+          "serviceType": {
+            "value": "[string(reference('Eventing-Template').outputs.serviceType)]"
+          },
+          "serviceAccountName": {
+            "value": "[string(reference('Eventing-Template').outputs.serviceAccountName)]"
+          },
+          "keyVaultUrl" : {
+              "value": "[variables('keyVaultUrl')]"
+          },
+          "serviceBusConnectionString" : {
+            "value" : "[if(equals(reference('Eventing-Template').outputs.serviceType, 'ServiceBus'), string(reference('Eventing-Template').outputs.serviceConnectionString), string(''))]"              
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "name": "Data-Template",
+      "dependsOn": [],
+      "apiVersion": "[variables('apiVersion')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('baseURI'),'/data/cosmos/azuredeploy-cosmos.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
