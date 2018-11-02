@@ -25,7 +25,7 @@
     "keyVaultName": "[concat(parameters('namePrefix'), '-keyvault')]",
     "keyVaultUrl":"[concat('https://', variables('keyVaultName'), '.vault.azure.net/')]",
     "dataAdministratorLogin":"[concat('U', uniqueString(resourceGroup().id, 'a72a1444-c799-4b70-9d69-f4985d15d372'), '#', '@')]",
-    "dataAdministratorLoginPasssword":"[concat('P', uniqueString(resourceGroup().id, '29cd7b98-f860-47e5-b284-206eb7de4505'), 'x', '!')]"
+    "dataAdministratorLoginPassword":"[concat('P', uniqueString(resourceGroup().id, '29cd7b98-f860-47e5-b284-206eb7de4505'), 'x', '!')]"
   },
   "resources": [    
     {
@@ -127,7 +127,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[variables('KeyVault')]",
+          "uri": "[variables('KeyVaultLink')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -135,10 +135,10 @@
             "value": "[variables('keyVaultName')]"
           },
           "webMSI": {
-            "value": "[reference('WebSite-Template').outputs.webMSI]"
+            "value": "[reference('WebSite-Template').outputs.webMSI.value]"
           },
           "serviceMSI":{
-            "value": "[reference('Service-Template').outputs.serviceMSI]"
+            "value": "[reference('Service-Template').outputs.serviceMSI.value]"
           },
           "serviceType": {
             "value": "[string(reference('Eventing-Template').outputs.serviceType)]"
@@ -234,19 +234,19 @@
             "value": "[string(reference('AppInsights-Template').outputs.appInsightInstrumentationKey.value)]"
           },
           "serviceName": {
-            "value": "[variables('serviceName')]"
+            "value": "[string(reference('Eventing-Template').outputs.serviceAccountName)]"
           },
           "serviceType": {
             "value": "[string(reference('Eventing-Template').outputs.serviceType)]"
-          },
-          "serviceAccountName": {
-            "value": "[string(reference('Eventing-Template').outputs.serviceAccountName)]"
           },
           "keyVaultUrl" : {
               "value": "[variables('keyVaultUrl')]"
           },
           "serviceBusConnectionString" : {
-            "value" : "[if(equals(reference('Eventing-Template').outputs.serviceType, 'ServiceBus'), string(reference('Eventing-Template').outputs.serviceConnectionString), string(''))]"              
+            "value" : "[if(equals(reference('Eventing-Template').outputs.serviceType, 'ServiceBus'), string(reference('Eventing-Template').outputs.serviceConnectionString), '')]"              
+          },
+          "storageAccountName": {
+            "value": "[string(reference('Storage-Template').outputs.storageAccountName.value)]"
           }
         }
       }

@@ -65,5 +65,11 @@
                 "accessTier": "Hot"
             }
         }
-    ]
+    ],
+    "outputs": {
+        "storageAccountName": {
+            "type":"string",
+            "value":"[concat(string(parameters('namePrefix')), 'storcontosotrav')]"
+        }
+    }
 }

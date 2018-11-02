@@ -12,103 +12,88 @@
         "appInsightInstrumentationKey": {
             "type": "string"
         },
-        "keyVaultUrl" : {
+        "keyVaultUrl": {
             "type": "string"
         },
         "serviceType": {
             "type": "string"
         },
-        "serviceAccountName": {
-            "type": "string"
-        },
         "serviceBusConnectionString": {
             "type": "string",
             "defaultValue": ""
+        },
+        "storageAccountName": {
+            "type": "string"
         }
     },
     "variables": {
-        "functionAppName": "[parameters('serviceName')]",
-        "hostingPlanName": "[concat('asp-',variables('functionAppName'))]",
-        "storageAccountName": "[concat(string(parameters('namePrefix')), 'storcontosotrav')]",
-        "storageAccountid": "[concat(resourceGroup().id,'/providers/','Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
-        "location": "[resourceGroup().location]"
+        "funcAppName": "[concat(parameters('namePrefix'), 'contosotravel-func')]",
+        "hostingPlanName": "[concat('asp-',variables('funcAppName'))]",
+        "location": "[resourceGroup().location]",
+        "storageAccountid": "[concat(resourceGroup().id,'/providers/','Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))]"
     },
     "resources": [
         {
             "type": "Microsoft.Web/serverfarms",
-
-            "apiVersion": "2016-09-01",
+            "sku": {
+                "name": "Y1",
+                "tier": "Dynamic",
+                "size": "Y1",
+                "family": "Y",
+                "capacity": 0
+            },
+            "kind": "functionapp",
             "name": "[variables('hostingPlanName')]",
+            "apiVersion": "2016-09-01",
             "location": "[variables('location')]",
             "properties": {
-                "name": "[variables('hostingPlanName')]",
-                "computeMode": "Dynamic",
-                "sku": "Dynamic"
-              }
+                "workerTierName": null,
+                "adminSiteName": null,
+                "hostingEnvironmentProfile": null,
+                "perSiteScaling": false,
+                "reserved": false,
+                "targetWorkerCount": 0,
+                "targetWorkerSizeId": 0
+            }
         },
         {
-            "apiVersion": "2016-08-01",
             "type": "Microsoft.Web/sites",
-            "name": "[variables('functionAppName')]",
+            "kind": "functionapp",
+            "name": "[variables('funcAppName')]",
+            "apiVersion": "2015-08-01",
             "location": "[variables('location')]",
             "identity": {
                 "type": "SystemAssigned"
             },
-            "kind": "functionapp",
-            "dependsOn": [
-                "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]"
-            ],
             "properties": {
-                "enabled": true,
-                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]",
-                "siteConfig": {
-                    "appSettings": [
-                        {
-                            "name": "AzureWebJobsDashboard",
-                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(variables('storageAccountid'),'2015-05-01-preview').key1)]"
-                        },
-                        {
-                            "name": "AzureWebJobsStorage",
-                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(variables('storageAccountid'),'2015-05-01-preview').key1)]"
-                        },
-                        {
-                            "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
-                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(variables('storageAccountid'),'2015-05-01-preview').key1)]"
-                        },
-                        {
-                            "name": "WEBSITE_CONTENTSHARE",
-                            "value": "[toLower(variables('functionAppName'))]"
-                        },
-                        {
-                            "name": "FUNCTIONS_EXTENSION_VERSION",
-                            "value": "~2"
-                        },
-                        {
-                            "name": "WEBSITE_NODE_DEFAULT_VERSION",
-                            "value": "8.11.1"
-                        },
-                        {
-                            "name": "FUNCTIONS_WORKER_RUNTIME",
-                            "value": "dotnet"
-                        },
-                        {
-                            "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-                            "value": "[parameters('appInsightInstrumentationKey')]"
-                        },
-                        {
-                            "name": "KeyVaultUrl",
-                            "value": "[parameters('keyVaultUrl')]"
-                        },
-                        {
-                            "name": "ServiceBusConnection",
-                            "value": "[parameters('serviceBusConnectionString')]"
-                        }
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]"
+            },
+            "resources": [
+                {
+                    "type": "config",
+                    "name": "appsettings",
+                    "apiVersion": "2015-08-01",
+                    "properties": {
+                        "AzureWebJobsDashboard": "[concat('DefaultEndpointsProtocol=https;AccountName=', parameters('storageAccountName'), ';AccountKey=', listKeys(variables('storageAccountid'),'2015-05-01-preview').key1)]",
+                        "AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=', parameters('storageAccountName'), ';AccountKey=', listKeys(variables('storageAccountid'),'2015-05-01-preview').key1)]",
+                        "FUNCTIONS_EXTENSION_VERSION": "~2",
+                        "WEBSITE_NODE_DEFAULT_VERSION": "8.11.1",
+                        "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+                        "APPINSIGHTS_INSTRUMENTATIONKEY": "[parameters('appInsightInstrumentationKey')]",
+                        "KeyVaultUrl": "[parameters('keyVaultUrl')]",
+                        "ServiceBusConnection": "[parameters('serviceBusConnectionString')]"
+                    },
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Web/sites', variables('funcAppName'))]"
                     ]
                 }
-            }
+            ],
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]"
+            ]
         },
         {
-            "name": "[concat(parameters('serviceAccountName'), '/Microsoft.EventGrid/',concat(variables('functionAppName'),'-PurchaseItineraryEventGrid'))]",
+            "name": "[concat(parameters('serviceName'), '/Microsoft.EventGrid/',concat(variables('funcAppName'),'-PurchaseItineraryEventGrid'))]",
             "type": "Microsoft.EventGrid/topics/providers/eventSubscriptions",
             "condition": "[equals(parameters('serviceType'), 'EventGrid')]",
             "location": "[variables('location')]",
@@ -117,7 +102,7 @@
                 "destination": {
                     "endpointType": "WebHook",
                     "properties": {
-                        "endpointUrl": "[concat('https://', variables('functionAppName'),'.azurewebsites.net/runtime/webhooks/eventgrid?functionName=PurchaseItineraryEventGrid')]"
+                        "endpointUrl": "[concat('https://', variables('funcAppName'),'.azurewebsites.net/api/PurchaseItineraryEventGrid')]"
                     }
                 },
                 "filter": {
@@ -130,8 +115,8 @@
     ],
     "outputs": {
         "serviceMSI": {
-            "type": "object",
-            "value": "[reference(concat(resourceId('Microsoft.Web/sites', variables('functionAppName')),'/providers/Microsoft.ManagedIdentity/Identities/default'), '2015-08-31-PREVIEW')]"
+            "type": "string",
+            "value": "[concat('Microsoft.Web/sites/', variables('funcAppName'),'/providers/Microsoft.ManagedIdentity/Identities/default')]"
         }
     }
 }

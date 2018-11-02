@@ -27,11 +27,11 @@
   "outputs": {
     "serviceAccountName": {
       "type": "string",
-      "value": "[string(variables('eventGridName'))]"
+      "value": "[concat('eg-', parameters('namePrefix'), '-contosotravel')]"
     },
     "serviceType": {
       "type": "string",
-      "value": "string('EventGrid')"
+      "value": "EventGrid"
     }
   }
 }
