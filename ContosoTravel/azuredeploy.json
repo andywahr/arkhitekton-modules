@@ -141,16 +141,16 @@
             "value": "[reference('Service-Template').outputs.serviceMSI.value]"
           },
           "serviceType": {
-            "value": "[string(reference('Eventing-Template').outputs.serviceType)]"
+            "value": "[reference('Eventing-Template').outputs.serviceType.value]"
           },
           "serviceAccountName": {
-            "value": "[string(reference('Eventing-Template').outputs.serviceAccountName)]"
+            "value": "[reference('Eventing-Template').outputs.serviceAccountName.value]"
           },
           "dataAccountName": {
-            "value": "[string(reference('Data-Template').outputs.dataAccountName)]"
+            "value": "[reference('Data-Template').outputs.dataAccountName.value]"
           },
           "dataType": {
-            "value": "[string(reference('Data-Template').outputs.dataType)]"
+            "value": "[reference('Data-Template').outputs.dataType.value]"
           },
           "dataAdministratorLoginPassword": {
             "value": "[variables('dataAdministratorLoginPassword')]"
