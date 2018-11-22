@@ -13,7 +13,7 @@
     "subnet2Name": "Subnet2",
     "location": "[resourceGroup().location]",
     "apiVersion": "2018-07-01",
-    "siteName": "[concat('contosotravel-', parameters('namePrefix'))]",
+    "siteName": "[concat('contosotravel-', parameters('namePrefix'), '-web')]",
     "serviceName": "[concat('contosotravel-', parameters('namePrefix'), '-service')]",
     "hostNameBindings": "[concat(variables('siteName'), '.azurewebsites.net')]",
     "baseURI": "https://andywahrstorapps.blob.core.windows.net/contosotravel",

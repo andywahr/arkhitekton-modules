@@ -27,7 +27,7 @@
         }
     },
     "variables": {
-        "funcAppName": "[concat(parameters('namePrefix'), 'contosotravel-func')]",
+        "funcAppName": "[parameters('serviceName')]",
         "hostingPlanName": "[concat('asp-',variables('funcAppName'))]",
         "location": "[resourceGroup().location]",
         "storageAccountid": "[concat(resourceGroup().id,'/providers/','Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))]"
