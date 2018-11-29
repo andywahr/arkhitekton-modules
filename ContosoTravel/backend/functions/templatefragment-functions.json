@@ -3,7 +3,8 @@
   "name": "Service-Template",
   "dependsOn": [
     "AppInsights-Template",
-    "Eventing-Template"
+    "Eventing-Template",
+    "Storage-Template"
   ],
   "apiVersion": "[variables('apiVersion')]",
   "properties": {
@@ -20,19 +21,19 @@
         "value": "[string(reference('AppInsights-Template').outputs.appInsightInstrumentationKey.value)]"
       },
       "serviceName": {
-        "value": "[variables('serviceName')]"
+        "value": "[string(reference('Eventing-Template').outputs.serviceAccountName)]"
       },
       "serviceType": {
-        "value": "[reference('Eventing-Template').outputs.serviceType]"
+        "value": "[string(reference('Eventing-Template').outputs.serviceType)]"
       },
-      "serviceAccountName": {
-        "value": "[reference('Eventing-Template').outputs.serviceAccountName]"
+      "keyVaultUrl" : {
+          "value": "[variables('keyVaultUrl')]"
       },
-      "keyVaultUrl": {
-        "value": "[variables('keyVaultUrl')]"
+      "serviceBusConnectionString" : {
+        "value" : "[if(equals(reference('Eventing-Template').outputs.serviceType, 'ServiceBus'), string(reference('Eventing-Template').outputs.serviceConnectionString), '')]"              
       },
-      "serviceBusConnectionString": {
-        "value": "[if(equals(reference('Eventing-Template').outputs.serviceType, 'ServiceBus'), reference('Eventing-Template').outputs.serviceConnectionString, '')]"
+      "storageAccountName": {
+        "value": "[string(reference('Storage-Template').outputs.storageAccountName.value)]"
       }
     }
   }

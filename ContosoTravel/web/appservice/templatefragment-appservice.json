@@ -1,32 +1,32 @@
 {
-    "type": "Microsoft.Resources/deployments",
-    "name": "WebSite-Template",
-    "dependsOn": [
-      "AppInsights-Template"
-    ],
-    "apiVersion": "[variables('apiVersion')]",
-    "properties": {
-      "mode": "Incremental",
-      "templateLink": {
-        "uri": "[concat(variables('baseURI'),'/web/appservice/azuredeploy-appservice.json')]",
-        "contentVersion": "1.0.0.0"
+  "type": "Microsoft.Resources/deployments",
+  "name": "WebSite-Template",
+  "dependsOn": [
+    "AppInsights-Template"
+  ],
+  "apiVersion": "[variables('apiVersion')]",
+  "properties": {
+    "mode": "Incremental",
+    "templateLink": {
+      "uri": "[concat(variables('baseURI'),'/web/appservice/azuredeploy-appservice.json')]",
+      "contentVersion": "1.0.0.0"
+    },
+    "parameters": {
+      "namePrefix": {
+        "value": "[parameters('namePrefix')]"
       },
-      "parameters": {
-        "namePrefix": {
-          "value": "[parameters('namePrefix')]"
-        },
-        "appInsightInstrumentationKey": {
-          "value": "[string(reference('AppInsights-Template').outputs.appInsightInstrumentationKey.value)]"
-        },
-        "webSiteFQDN": {
-          "value": "[variables('hostNameBindings')]"
-        },
-        "siteName": {
-          "value": "[variables('siteName')]"
-        },
-        "keyVaultUrl" : {
-            "value": "[variables('keyVaultUrl')]"
-        }
+      "appInsightInstrumentationKey": {
+        "value": "[string(reference('AppInsights-Template').outputs.appInsightInstrumentationKey.value)]"
+      },
+      "webSiteFQDN": {
+        "value": "[variables('hostNameBindings')]"
+      },
+      "siteName": {
+        "value": "[variables('siteName')]"
+      },
+      "keyVaultUrl" : {
+          "value": "[variables('keyVaultUrl')]"
       }
     }
   }
+}
