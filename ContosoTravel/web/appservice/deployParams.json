@@ -1,0 +1,12 @@
+"WebAppName" : {
+    "value": "contosotravel-NAMEPREFIX-web"
+},
+"WebAppType" : {
+    "value": "webapp"
+},
+"ConnectedServiceName" : {
+    "value": "CONNECTEDSERVICEID"
+},
+"DeployPlatform"  : {
+    "value": "appservice"
+}
