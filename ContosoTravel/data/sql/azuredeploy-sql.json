@@ -26,67 +26,66 @@
     },
     "resources": [
       {
-        "name": "[variables('sqlServerName')]",
-        "type": "Microsoft.Sql/servers",
-        "apiVersion": "2014-04-01",
-        "location": "[variables('location')]",
-        "tags": {
-          "displayName": "SqlServer"
-        },
-        "properties": {
-          "administratorLogin": "[parameters('dataAdministratorLogin')]",
-          "administratorLoginPassword": "[parameters('dataAdministratorLoginPassword')]",
-          "version": "12.0"
-        }
-      } ,
-      {
-        "name": "[variables('databaseName')]",
-        "type": "Microsoft.Sql/servers/databases",
-        "apiVersion": "2017-03-01-preview",
-        "location": "[variables('location')]",
-        "tags": {
-          "displayName": "Database"
-        },       
-        "sku": {
-          "name": "S0",
-          "tier": "Standard"
-        },
-        "properties": {
-          "edition": "Standard",
-          "collation": "SQL_Latin1_General_CP1_CI_AS",
-          "requestedServiceObjectiveName": "S0"
-        },
-        "dependsOn": [
-          "[resourceId('Microsoft.Sql/servers', variables('sqlServerName'))]"
-        ]
-      },
-      {
-        "comments": "Transparent Data Encryption",
-        "name": "current",
-        "type": "Microsoft.Sql/servers/databases/transparentDataEncryption",
-        "apiVersion": "2014-04-01",
-        "properties": {
-          "status": "Enabled"
-        },
-        "dependsOn": [
-          "[resourceId('Microsoft.Sql/servers', variables('sqlServerName'))]",
-          "[resourceId('Microsoft.Sql/servers/databases', variables('sqlServerName'), variables('databaseName'))]"
-        ]
-      },
-      {
-        "name": "AllowAllMicrosoftAzureIps",
-        "type": "Microsoft.Sql/servers/firewallRules",
-        "apiVersion": "2015-05-01-preview",
-        "location": "[variables('location')]",
-        "properties": {
-          "endIpAddress": "0.0.0.0",
-          "startIpAddress": "0.0.0.0"
-        },
-        "dependsOn": [
-          "[resourceId('Microsoft.Sql/servers', variables('sqlServerName'))]"
-        ]
+          "name": "[variables('sqlServerName')]",
+          "type": "Microsoft.Sql/servers",
+          "apiVersion": "2014-04-01-preview",
+          "location": "[variables('location')]",
+          "tags": {
+              "displayName": "SqlServer"
+          },
+          "properties": {
+              "administratorLogin": "[parameters('dataAdministratorLogin')]",
+              "administratorLoginPassword": "[parameters('dataAdministratorLoginPassword')]",
+              "version": "12.0"
+          },
+          "resources": [
+              {
+                  "name": "[variables('databaseName')]",
+                  "type": "databases",
+                  "apiVersion": "2015-01-01",
+                  "location": "[variables('location')]",
+                  "tags": {
+                      "displayName": "Database"
+                  },
+                  "properties": {
+                      "edition": "Standard",
+                      "collation": "SQL_Latin1_General_CP1_CI_AS",
+                      "requestedServiceObjectiveName": "Standard"
+                  },
+                  "dependsOn": [
+                      "[variables('sqlServerName')]"
+                  ],
+                  "resources": [
+                      {
+                          "comments": "Transparent Data Encryption",
+                          "name": "current",
+                          "type": "transparentDataEncryption",
+                          "apiVersion": "2014-04-01-preview",
+                          "properties": {
+                              "status": "Enabled"
+                          },
+                          "dependsOn": [
+                              "[variables('databaseName')]"
+                          ]
+                      }
+                  ]
+              },
+              {
+                  "name": "AllowAllMicrosoftAzureIps",
+                  "type": "firewallrules",
+                  "apiVersion": "2014-04-01",
+                  "location": "[variables('location')]",
+                  "properties": {
+                      "endIpAddress": "0.0.0.0",
+                      "startIpAddress": "0.0.0.0"
+                  },
+                  "dependsOn": [
+                      "[variables('sqlServerName')]"
+                  ]
+              }
+          ]
       }
-    ],
+  ],
     "outputs": {
         "dataAccountName": {
             "type": "string",
