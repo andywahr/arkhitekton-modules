@@ -80,8 +80,8 @@
             "value": "ServiceBus"
         },
         "serviceConnectionString" : {
-            "type":"string",
-            "value": "[listKeys(resourceId('Microsoft.ServiceBus/namespaces/queues/authorizationrules', variables('serviceBusName'), 'PurchaseItinerary', 'PurchaseItinerary-Reader'),'2015-08-01').primaryConnectionString]"
+            "type": "string",
+            "value": "[string(listKeys(resourceId('Microsoft.ServiceBus/namespaces/queues/authorizationrules', variables('serviceBusName'), 'PurchaseItinerary', 'PurchaseItinerary-Reader'),'2015-08-01').primaryConnectionString)]"
         }
     }
 }
