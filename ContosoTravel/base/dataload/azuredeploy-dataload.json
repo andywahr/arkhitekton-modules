@@ -1,0 +1,66 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "namePrefix": {
+            "type": "string",
+            "maxLength": 8
+        },  
+        "keyVaultUrl": {
+            "type": "string"
+        }
+    },
+    "variables": {
+        "siteName": "[concat(parameters('namePrefix'), '-appInsight-ContosoTravel')]",
+        "location": "[resourceGroup().location]",
+        "aciName" : "[concat('aci-contosotravel-', parameters('namePrefix'), '-dataload')]",
+        "aciIdentityId" : "[concat('Microsoft.ContainerInstance/containerGroups/', variables('aciName'),'/providers/Microsoft.ManagedIdentity/Identities/identity')]"
+    },
+    "resources": [
+        {
+            "comments": "Dataload ACI Job",
+            "type": "Microsoft.ContainerInstance/containerGroups",
+            "name": "[variables('aciName')]",
+            "apiVersion": "2018-10-01",
+            "location": "[variables('location')]",
+            "tags": {},
+            "scale": null,
+            "properties": {
+                "containers": [
+                    {
+                        "name": "dataloader",
+                        "properties": {
+                            "image": "andywahr/arkhitekton-dataloader",
+                            "ports": [],
+                            "environmentVariables": [
+                                {
+                                    "name": "KeyVaultUrl",
+                                    "secureValue": null,
+                                    "value": "[parameters('keyVaultUrl')]"
+                                }
+                            ],
+                            "resources": {
+                                "requests": {
+                                    "memoryInGB": 1.5,
+                                    "cpu": 1
+                                }
+                            }
+                        }
+                    }
+                ],
+                "restartPolicy": "Always",
+                "osType": "Linux"
+            },
+            "dependsOn": [],
+            "identity": {
+                "type": "SystemAssigned"
+            }
+        }
+    ],
+    "outputs": {
+        "aciMSIId" :{
+            "type": "string",
+            "value": "[concat('Microsoft.ContainerInstance/containerGroups/', variables('aciName'))]"
+        }        
+    }
+}

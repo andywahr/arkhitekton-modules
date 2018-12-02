@@ -21,6 +21,7 @@
     "StorageLink": "[concat(variables('baseURI'),'/base/storage/azuredeploy-storage.json')]",
     "VNETLink": "[concat(variables('baseURI'),'/base/vnet/azuredeploy-vnet.json')]",
     "AppInsightsLink": "[concat(variables('baseURI'),'/base/appinsights/azuredeploy-appinsights.json')]",
+    "DataLoadLink" : "[concat(variables('baseURI'),'/base/dataload/azuredeploy-dataload.json')]",
     "KeyVaultLink": "[concat(variables('baseURI'),'/base/keyvault/azuredeploy-keyvault.json')]",
     "keyVaultName": "[concat(parameters('namePrefix'), '-keyvault')]",
     "keyVaultUrl":"[concat('https://', variables('keyVaultName'), '.vault.azure.net/')]",
@@ -116,12 +117,33 @@
     },
     {
       "type": "Microsoft.Resources/deployments",
+      "name": "Dataload-Template",
+      "apiVersion": "[variables('apiVersion')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('DataLoadLink')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "namePrefix": {
+            "value": "[parameters('namePrefix')]"
+          },  
+          "keyVaultUrl": {
+            "value": "[parameters('keyVaultUrl')]"
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
       "name": "KeyVault-Template",
       "dependsOn": [
         "WebSite-Template",
         "Service-Template",
         "Eventing-Template",
-        "Data-Template"
+        "Data-Template",
+        "Dataload-Template"
       ],
       "apiVersion": "[variables('apiVersion')]",
       "properties": {
@@ -136,6 +158,9 @@
           },
           "webMSI": {
             "value": "[reference('WebSite-Template').outputs.webMSI.value]"
+          },
+          "dataloadACIId": {
+            "value": "[reference('Dataload-Template').outputs.aciMSIId.value]"
           },
           "serviceMSI":{
             "value": "[reference('Service-Template').outputs.serviceMSI.value]"

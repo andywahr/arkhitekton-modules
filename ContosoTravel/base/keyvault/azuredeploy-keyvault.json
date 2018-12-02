@@ -8,6 +8,9 @@
     "webMSI":{
       "type":"string"
     },
+    "dataloadACIId":{
+      "type":"string"
+    },
     "serviceMSI":{
       "type":"string"
     },
@@ -67,7 +70,16 @@
                     "Get"
                 ]
             }
-        }
+          },
+          {
+            "tenantId": "[reference(parameters('dataloadACIId'), '2018-10-01', 'Full').identity.tenantId]",
+            "objectId": "[reference(parameters('dataloadACIId'), '2018-10-01', 'Full').identity.principalId]",
+            "permissions": {
+                "secrets": [
+                    "Get"
+                ]
+            }
+         }
       ],
         "sku": {
           "name": "Standard",
