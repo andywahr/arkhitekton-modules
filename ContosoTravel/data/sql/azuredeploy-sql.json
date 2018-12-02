@@ -28,13 +28,8 @@
       {
         "name": "[variables('sqlServerName')]",
         "type": "Microsoft.Sql/servers",
-        "kind": "v12.0",
         "apiVersion": "2014-04-01",
         "location": "[variables('location')]",
-        "sku": {
-            "name": "S0",
-            "tier": "Standard"
-        },
         "tags": {
           "displayName": "SqlServer"
         },
@@ -51,6 +46,10 @@
             "location": "[variables('location')]",
             "tags": {
               "displayName": "Database"
+            },       
+            "sku": {
+              "name": "S0",
+              "tier": "Standard"
             },
             "properties": {
               "edition": "Standard",
