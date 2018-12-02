@@ -81,7 +81,7 @@
         },
         "serviceConnectionString" : {
             "type":"string",
-            "value": "[listKeys(resourceId(concat('Microsoft.ServiceBus/namespaces/Queues/AuthorizationRules/', variables('serviceBusName')), 'PurchaseItinerary','PurchaseItinerary-Reader'),'2015-08-01').primaryConnectionString, '')]"
+            "value": "[listKeys(resourceId(concat('Microsoft.ServiceBus/namespaces/Queues/AuthorizationRules/', variables('serviceBusName')), 'PurchaseItinerary','PurchaseItinerary-Reader'),'2015-08-01').primaryConnectionString]"
         }
     }
 }
