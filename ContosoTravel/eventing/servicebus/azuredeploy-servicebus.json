@@ -29,7 +29,7 @@
                     "name": "PurchaseItinerary",
                     "type": "queues",
                     "dependsOn": [
-                        "[concat('Microsoft.ServiceBus/namespaces/', parameters('serviceBusName'))]"
+                        "[concat('Microsoft.ServiceBus/namespaces/', variables('serviceBusName'))]"
                     ],
                     "properties": {
                         "path": "PurchaseItinerary"                      

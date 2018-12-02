@@ -6,7 +6,7 @@
     "properties": {
       "mode": "Incremental",
       "templateLink": {
-        "uri": "[concat(variables('baseURI'),'/data/cosmos/azuredeploy-cosmos.json')]",
+        "uri": "[concat(variables('baseURI'),'/data/sql/azuredeploy-sql.json')]",
         "contentVersion": "1.0.0.0"
       },
       "parameters": {
