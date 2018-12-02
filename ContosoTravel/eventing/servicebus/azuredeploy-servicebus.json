@@ -44,7 +44,7 @@
                             ],
                             "properties": {
                                 "rights": ["Listen"],
-                                "keyName": "[PurchaseItineraryReadKey')]",
+                                "keyName": "PurchaseItineraryReadKey",
                                 "claimType": "SharedAccessKey",
                                 "claimValue": "None",
                                 "revision": -1  
@@ -59,7 +59,7 @@
                             ],
                             "properties": {
                                 "rights": ["Send"],
-                                "keyName": "[PurchaseItinerarySendKey')]",
+                                "keyName": "PurchaseItinerarySendKey",
                                 "claimType": "SharedAccessKey",
                                 "claimValue": "None",
                                 "revision": -1  

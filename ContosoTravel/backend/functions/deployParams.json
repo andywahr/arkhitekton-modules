@@ -4,6 +4,9 @@
 "WebAppType" : {
     "value": "functionapp"
 },
+"ConnectedServiceName" : {
+    "value": "CONNECTEDSERVICEID"
+},
 "DeployPlatform"  : {
     "value": "appservice"
 }
