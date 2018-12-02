@@ -21,16 +21,16 @@
         "value": "[string(reference('AppInsights-Template').outputs.appInsightInstrumentationKey.value)]"
       },
       "serviceName": {
-        "value": "[string(reference('Eventing-Template').outputs.serviceAccountName)]"
+        "value": "[string(reference('Eventing-Template').outputs.serviceAccountName.value)]"
       },
       "serviceType": {
-        "value": "[string(reference('Eventing-Template').outputs.serviceType)]"
+        "value": "[string(reference('Eventing-Template').outputs.serviceType.value)]"
       },
       "keyVaultUrl" : {
           "value": "[variables('keyVaultUrl')]"
       },
       "serviceBusConnectionString" : {
-        "value" : "[if(equals(reference('Eventing-Template').outputs.serviceType, 'ServiceBus'), string(reference('Eventing-Template').outputs.serviceConnectionString), '')]"              
+        "value" : "[if(equals(reference('Eventing-Template').outputs.serviceType.value, 'ServiceBus'), string(reference('Eventing-Template').outputs.serviceConnectionString.value), '')]"              
       },
       "storageAccountName": {
         "value": "[string(reference('Storage-Template').outputs.storageAccountName.value)]"
