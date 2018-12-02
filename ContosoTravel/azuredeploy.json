@@ -16,7 +16,7 @@
     "siteName": "[concat('contosotravel-', parameters('namePrefix'), '-web')]",
     "serviceName": "[concat('contosotravel-', parameters('namePrefix'), '-service')]",
     "hostNameBindings": "[concat(variables('siteName'), '.azurewebsites.net')]",
-    "baseURI": "https://andywahrstorapps.blob.core.windows.net/contosotravel",
+    "baseURI": "https://raw.githubusercontent.com/andywahr/arkhitekton-modules/master/ContosoTravel",
     "LogAnalyticsLink": "[concat(variables('baseURI'),'/base/loganalytics/azuredeploy-loganalytics.json')]",
     "StorageLink": "[concat(variables('baseURI'),'/base/storage/azuredeploy-storage.json')]",
     "VNETLink": "[concat(variables('baseURI'),'/base/vnet/azuredeploy-vnet.json')]",
