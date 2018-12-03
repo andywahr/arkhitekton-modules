@@ -31,7 +31,13 @@
     } ,
     "dataAdministratorLogin": {
       "type": "string"
-    }   
+    },
+    "dataAccountLoginPassword": {
+      "type": "string"
+    } ,
+    "dataAccountLogin": {
+      "type": "string"
+    }
   },
   "variables": {
     "location": "[resourceGroup().location]",
@@ -58,7 +64,7 @@
               "objectId": "[reference(parameters('webMSI'), '2015-08-31-PREVIEW').principalId]",
               "permissions": {
                   "secrets": [
-                      "Get"
+                      "Get", "List"
                   ]
               }
           },
@@ -67,7 +73,7 @@
             "objectId": "[reference(parameters('serviceMSI'), '2015-08-31-PREVIEW').principalId]",
             "permissions": {
                 "secrets": [
-                    "Get"
+                    "Get", "List"
                 ]
             }
           },
@@ -76,7 +82,7 @@
             "objectId": "[reference(parameters('dataloadACIId'), '2018-10-01', 'Full').identity.principalId]",
             "permissions": {
                 "secrets": [
-                    "Get"
+                    "Get", "List"
                 ]
             }
          }
@@ -203,6 +209,28 @@
       "apiVersion": "2015-06-01",
       "properties": {
         "value": "[parameters('dataAdministratorLoginPassword')]"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.KeyVault/vaults/', parameters('keyVaultName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "name": "[concat(parameters('keyVaultName'), '/ContosoTravel--DataAccountName')]",
+      "apiVersion": "2015-06-01",
+      "properties": {
+        "value": "[parameters('dataAccountLogin')]"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.KeyVault/vaults/', parameters('keyVaultName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "name": "[concat(parameters('keyVaultName'), '/ContosoTravel--DataAccountPassword')]",
+      "apiVersion": "2015-06-01",
+      "properties": {
+        "value": "[parameters('dataAccountLoginPassword')]"
       },
       "dependsOn": [
         "[concat('Microsoft.KeyVault/vaults/', parameters('keyVaultName'))]"

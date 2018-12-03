@@ -26,7 +26,9 @@
     "keyVaultName": "[concat(parameters('namePrefix'), '-keyvault')]",
     "keyVaultUrl":"[concat('https://', variables('keyVaultName'), '.vault.azure.net/')]",
     "dataAdministratorLogin":"[concat('U', uniqueString(resourceGroup().id, 'a72a1444-c799-4b70-9d69-f4985d15d372'), '#', '@')]",
-    "dataAdministratorLoginPassword":"[concat('P', uniqueString(resourceGroup().id, '29cd7b98-f860-47e5-b284-206eb7de4505'), 'x', '!')]"
+    "dataAdministratorLoginPassword":"[concat('P', uniqueString(resourceGroup().id, '29cd7b98-f860-47e5-b284-206eb7de4505'), 'x', '!')]",
+    "dataAccountLogin":"[concat('U', uniqueString(resourceGroup().id, '8e7c1649-2121-4f91-a307-d7bf8615c2cd'), '#', '@')]",
+    "dataAccountLoginPassword":"[concat('P', uniqueString(resourceGroup().id, '5af24dfc-e00e-45cf-8ae4-639041e34d07'), 'x', '!')]"
   },
   "resources": [    
     {
@@ -118,6 +120,9 @@
     {
       "type": "Microsoft.Resources/deployments",
       "name": "Dataload-Template",
+      "dependsOn": [
+        "Data-Template"
+      ],
       "apiVersion": "[variables('apiVersion')]",
       "properties": {
         "mode": "Incremental",
@@ -182,7 +187,13 @@
           } ,
           "dataAdministratorLogin": {
             "value": "[variables('dataAdministratorLogin')]"
-          }  
+          }  ,
+          "dataAccountLoginPassword": {
+            "value": "[variables('dataAccountLoginPassword')]"
+          } ,
+          "dataAccountLogin": {
+            "value": "[variables('dataAccountLogin')]"
+          }
         }
       }
     }
