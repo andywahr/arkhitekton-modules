@@ -130,7 +130,7 @@
             "value": "[parameters('namePrefix')]"
           },  
           "keyVaultUrl": {
-            "value": "[parameters('keyVaultUrl')]"
+            "value": "[variables('keyVaultUrl')]"
           }
         }
       }
