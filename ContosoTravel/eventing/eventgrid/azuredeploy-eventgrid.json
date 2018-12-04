@@ -32,6 +32,14 @@
     "serviceType": {
       "type": "string",
       "value": "EventGrid"
+    },
+    "serviceConnectionString" : {
+        "type": "string",
+        "value": ""
+    },
+    "eventingConnectionString" : {
+        "type": "string",
+        "value": ""
     }
   }
 }

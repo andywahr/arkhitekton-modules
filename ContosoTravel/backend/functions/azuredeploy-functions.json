@@ -6,6 +6,9 @@
             "maxLength": 8,
             "type": "string"
         },
+        "eventingName": {
+            "type": "string"
+        },
         "serviceName": {
             "type": "string"
         },
@@ -93,7 +96,7 @@
             ]
         },
         {
-            "name": "[concat(parameters('serviceName'), '/Microsoft.EventGrid/',concat(variables('funcAppName'),'-PurchaseItineraryEventGrid'))]",
+            "name": "[concat(parameters('eventingName'), '/Microsoft.EventGrid/',concat(variables('funcAppName'),'-PurchaseItineraryEventGrid'))]",
             "type": "Microsoft.EventGrid/topics/providers/eventSubscriptions",
             "condition": "[equals(parameters('serviceType'), 'EventGrid')]",
             "location": "[variables('location')]",

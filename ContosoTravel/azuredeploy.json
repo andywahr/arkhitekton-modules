@@ -193,6 +193,9 @@
           } ,
           "dataAccountLogin": {
             "value": "[variables('dataAccountLogin')]"
+          },
+          "serviceConnectionString" : {
+            "value": "[reference('Eventing-Template').outputs.eventingConnectionString.value]"
           }
         }
       }

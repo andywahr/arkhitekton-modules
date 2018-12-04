@@ -37,6 +37,9 @@
     } ,
     "dataAccountLogin": {
       "type": "string"
+    },
+    "serviceConnectionString": {
+      "type" : "string"
     }
   },
   "variables": {
@@ -231,6 +234,17 @@
       "apiVersion": "2015-06-01",
       "properties": {
         "value": "[parameters('dataAccountLoginPassword')]"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.KeyVault/vaults/', parameters('keyVaultName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "name": "[concat(parameters('keyVaultName'), '/ContosoTravel--ServiceConnectionString')]",
+      "apiVersion": "2015-06-01",
+      "properties": {
+        "value": "[parameters('serviceConnectionString')]"
       },
       "dependsOn": [
         "[concat('Microsoft.KeyVault/vaults/', parameters('keyVaultName'))]"

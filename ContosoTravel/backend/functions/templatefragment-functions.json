@@ -21,6 +21,9 @@
         "value": "[string(reference('AppInsights-Template').outputs.appInsightInstrumentationKey.value)]"
       },
       "serviceName": {
+        "value": "[variables('serviceName')]"
+      },
+      "eventingName": {
         "value": "[string(reference('Eventing-Template').outputs.serviceAccountName.value)]"
       },
       "serviceType": {
