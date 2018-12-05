@@ -4,7 +4,7 @@
     "parameters": {
         "namePrefix": {
             "type": "string",
-            "maxLength": 8
+            "maxLength": 16
         }
     },
     "variables": {

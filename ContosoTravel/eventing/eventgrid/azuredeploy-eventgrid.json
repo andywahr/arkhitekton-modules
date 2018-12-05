@@ -3,7 +3,7 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "namePrefix": {
-      "maxLength": 8,
+      "maxLength": 16,
       "type": "string"
     }
   },
