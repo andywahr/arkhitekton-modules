@@ -17,7 +17,7 @@
         }
     },
     "variables": {
-        "storageAccount": "[concat(string(parameters('namePrefix')), 'storcontosotrav')]",
+        "storageAccount": "[concat(string(parameters('namePrefix')), 'scontrav')]",
         "location": "[resourceGroup().location]"
     },
     "resources": [
@@ -69,7 +69,7 @@
     "outputs": {
         "storageAccountName": {
             "type":"string",
-            "value":"[concat(string(parameters('namePrefix')), 'storcontosotrav')]"
+            "value":"[string(variables('storageAccount'))]"
         }
     }
 }
