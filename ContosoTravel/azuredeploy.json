@@ -23,7 +23,7 @@
     "AppInsightsLink": "[concat(variables('baseURI'),'/base/appinsights/azuredeploy-appinsights.json')]",
     "DataLoadLink" : "[concat(variables('baseURI'),'/base/dataload/azuredeploy-dataload.json')]",
     "KeyVaultLink": "[concat(variables('baseURI'),'/base/keyvault/azuredeploy-keyvault.json')]",
-    "keyVaultName": "[concat(parameters('namePrefix'), '-keyvault')]",
+    "keyVaultName": "['kv', concat(parameters('namePrefix'))]",
     "keyVaultUrl":"[concat('https://', variables('keyVaultName'), '.vault.azure.net/')]",
     "dataAdministratorLogin":"[concat('U', uniqueString(resourceGroup().id, 'a72a1444-c799-4b70-9d69-f4985d15d372'), '#', '@')]",
     "dataAdministratorLoginPassword":"[concat('P', uniqueString(resourceGroup().id, '29cd7b98-f860-47e5-b284-206eb7de4505'), 'x', '!')]",
