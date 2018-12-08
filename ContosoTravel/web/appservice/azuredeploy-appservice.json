@@ -12,16 +12,14 @@
         "siteName": {
             "type": "string"
         },
-        "webSiteFQDN": {
-            "type": "string"
-        },
         "keyVaultUrl" : {
             "type": "string"
         }
     },
     "variables": {
         "serverfarm": "[concat('asp-', parameters('siteName'))]",
-        "location": "[resourceGroup().location]"
+        "location": "[resourceGroup().location]",
+        "webSiteFQDN": "[concat(variables('siteName'), '.azurewebsites.net')]"
     },
     "resources": [
         {
@@ -115,7 +113,7 @@
         {
             "comments": "Generalized from resource: hostNameBindings",
             "type": "Microsoft.Web/sites/hostNameBindings",
-            "name": "[concat(parameters('siteName'), '/', parameters('webSiteFQDN'))]",
+            "name": "[concat(parameters('siteName'), '/', variables('webSiteFQDN'))]",
             "apiVersion": "2016-08-01",
             "location": "[variables('location')]",
             "scale": null,
@@ -149,7 +147,7 @@
     "outputs": {
         "webSiteFQDN": {
             "type": "string",
-            "value": "[string(parameters('webSiteFQDN'))]"
+            "value": "[string(variables('webSiteFQDN'))]"
         },
         "webMSI" : {
             "type": "string",

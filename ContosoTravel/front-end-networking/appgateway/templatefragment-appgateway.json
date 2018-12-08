@@ -17,7 +17,7 @@
           "value": "[parameters('namePrefix')]"
         },
         "frontResource": {
-          "value": "Yes"
+          "value": "FRONTRESOURCE"
         },
         "vnetName": {
           "value": "[variables('vnetName')]"
@@ -26,7 +26,7 @@
           "value": "[variables('subnet1Name')]"
         },
         "webSiteFQDN": {
-          "value": "[variables('hostNameBindings')]"
+          "value": "[reference('WebSite-Template').outputs.webSiteFQDN.value]"
         },
         "logAnalyticsName" :{
           "value": "[reference('LogAnalytics-Template').outputs.logAnalyticsName.value]"

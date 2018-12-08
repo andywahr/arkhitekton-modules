@@ -18,9 +18,6 @@
       "appInsightInstrumentationKey": {
         "value": "[string(reference('AppInsights-Template').outputs.appInsightInstrumentationKey.value)]"
       },
-      "webSiteFQDN": {
-        "value": "[variables('hostNameBindings')]"
-      },
       "siteName": {
         "value": "[variables('siteName')]"
       },
