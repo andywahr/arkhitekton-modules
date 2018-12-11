@@ -96,7 +96,7 @@
             ]
         },
         {
-            "name": "[concat(parameters('eventingName'), '/Microsoft.EventGrid/',concat(variables('funcAppName'),'-PurchaseItineraryEventGrid'))]",
+            "name": "[concat(parameters('eventingName'), '/Microsoft.EventGrid/',concat(variables('funcAppName'),'-PurchaseItinerary'))]",
             "type": "Microsoft.EventGrid/topics/providers/eventSubscriptions",
             "condition": "[equals(parameters('serviceType'), 'EventGrid')]",
             "location": "[variables('location')]",
@@ -105,7 +105,7 @@
                 "destination": {
                     "endpointType": "WebHook",
                     "properties": {
-                        "endpointUrl": "[concat('https://', variables('funcAppName'),'.azurewebsites.net/api/PurchaseItineraryEventGrid')]"
+                        "endpointUrl": "[concat('https://', variables('funcAppName'),'.azurewebsites.net/api/PurchaseItinerary')]"
                     }
                 },
                 "filter": {
