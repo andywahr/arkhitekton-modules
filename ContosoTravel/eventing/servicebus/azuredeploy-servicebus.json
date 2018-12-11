@@ -33,7 +33,7 @@
                     ],
                     "properties": {
                         "path": "PurchaseItinerary",
-                        "defaultMessageTimeToLive": "P10675199DT2H48M5.4775807S",
+                        "defaultMessageTimeToLive": "14.00:00:00",
                         "maxSizeInMegabytes": "1024",
                         "requiresDuplicateDetection": "false",
                         "requiresSession": "false",
