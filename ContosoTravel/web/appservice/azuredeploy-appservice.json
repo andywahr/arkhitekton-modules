@@ -19,7 +19,7 @@
     "variables": {
         "serverfarm": "[concat('asp-', parameters('siteName'))]",
         "location": "[resourceGroup().location]",
-        "webSiteFQDN": "[concat(variables('siteName'), '.azurewebsites.net')]"
+        "webSiteFQDN": "[concat(parameters('siteName'), '.azurewebsites.net')]"
     },
     "resources": [
         {
