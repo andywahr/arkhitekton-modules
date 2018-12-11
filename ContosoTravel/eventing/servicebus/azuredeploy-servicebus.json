@@ -32,7 +32,15 @@
                         "[concat('Microsoft.ServiceBus/namespaces/', variables('serviceBusName'))]"
                     ],
                     "properties": {
-                        "path": "PurchaseItinerary"                      
+                        "path": "PurchaseItinerary",
+                        "defaultMessageTimeToLive": "P10675199DT2H48M5.4775807S",
+                        "maxSizeInMegabytes": "1024",
+                        "requiresDuplicateDetection": "false",
+                        "requiresSession": "false",
+                        "maxDeliveryCount": "10",
+                        "autoDeleteOnIdle": "P10675199DT2H48M5.4775807S",
+                        "enablePartitioning": "false",
+                        "enableExpress": "false"                                            
                     },
                     "resources": [
                         {
