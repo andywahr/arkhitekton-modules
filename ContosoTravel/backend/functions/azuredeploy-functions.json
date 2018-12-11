@@ -105,7 +105,7 @@
                 "destination": {
                     "endpointType": "WebHook",
                     "properties": {
-                        "endpointUrl": "[concat('https://', variables('funcAppName'),'.azurewebsites.net/api/PurchaseItinerary')]"
+                        "endpointUrl": "[concat('https://', variables('funcAppName'),'.azurewebsites.net/api/PurchaseItineraryEventGrid')]"
                     }
                 },
                 "filter": {
