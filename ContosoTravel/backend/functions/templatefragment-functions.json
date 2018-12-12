@@ -37,6 +37,9 @@
       },
       "storageAccountName": {
         "value": "[string(reference('Storage-Template').outputs.storageAccountName.value)]"
+      },
+      "keyVaultAccountName" : {
+          "value": "[variables('keyVaultName')]"
       }
     }
   }

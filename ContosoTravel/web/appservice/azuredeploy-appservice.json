@@ -14,6 +14,9 @@
         },
         "keyVaultUrl" : {
             "type": "string"
+        },
+        "keyVaultAccountName" : {
+            "type": "string"
         }
     },
     "variables": {
@@ -99,7 +102,9 @@
                     "apiVersion": "2016-08-01",
                     "properties": {
                         "APPINSIGHTS_INSTRUMENTATIONKEY": "[parameters('appInsightInstrumentationKey')]",
-                        "KeyVaultUrl": "[parameters('keyVaultUrl')]"
+                        "KeyVaultUrl": "[parameters('keyVaultUrl')]",
+                        "KeyVaultAccountName": "[parameters('keyVaultAccountName')]",
+                        "WEBSITE_NODE_DEFAULT_VERSION" : "10.6.0"
                     },
                     "dependsOn": [
                         "[resourceId('Microsoft.Web/sites', parameters('siteName'))]"
