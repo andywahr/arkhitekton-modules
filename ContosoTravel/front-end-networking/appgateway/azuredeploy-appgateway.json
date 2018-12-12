@@ -76,7 +76,7 @@
                     {
                         "name": "appGatewayFrontendPort",
                         "properties": {
-                            "port": 443
+                            "port": 80
                         }
                     }
                 ],
@@ -96,8 +96,8 @@
                     {
                         "name": "appGatewayBackendHttpSettings",
                         "properties": {
-                            "port": 443,
-                            "protocol": "Https",
+                            "port": 80,
+                            "protocol": "Http",
                             "cookieBasedAffinity": "Disabled",
                             "pickHostNameFromBackendAddress": true,
                             "path": null,
@@ -118,7 +118,7 @@
                             "frontendPort": {
                                 "id": "[concat(variables('applicationGatewayID'), '/frontendPorts/appGatewayFrontendPort')]"
                             },
-                            "protocol": "Https",
+                            "protocol": "Http",
                             "requireServerNameIndication": false
                         }
                     }
@@ -145,7 +145,7 @@
                     {
                         "name": "HTTPProb",
                         "properties": {
-                            "protocol": "Https",
+                            "protocol": "Http",
                             "path": "/",
                             "interval": 30,
                             "timeout": 30,
