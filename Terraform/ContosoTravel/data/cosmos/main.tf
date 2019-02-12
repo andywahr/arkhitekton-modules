@@ -29,6 +29,9 @@ variable "keyVaultId" {
   type = "string"
 }
 
+variable "keyVaultPermId" {
+  type = "string"
+}
 resource "azurerm_cosmosdb_account" "cosmosdb" {
   name                = "contosotravel-${var.namePrefix}"
   location            = "${var.location}"
@@ -73,42 +76,36 @@ resource "azurerm_key_vault_secret" "dataType" {
   name     = "ContosoTravel--DataType"
   value    = "CosmosSQL"
   key_vault_id = "${var.keyVaultId}"
-  depends_on   =  ["deployKeyVaultPolicy"]
 }
 
 resource "azurerm_key_vault_secret" "dataAccountName" {
   name     = "ContosoTravel--DataAccountName"
   value    = "${azurerm_cosmosdb_account.cosmosdb.name}"
   key_vault_id = "${var.keyVaultId}"
-  depends_on   =  ["deployKeyVaultPolicy"]
 }
 
 resource "azurerm_key_vault_secret" "databaseName" {
   name     = "ContosoTravel--DatabaseName"
   value    = "ContosoTravel"
   key_vault_id = "${var.keyVaultId}"
-  depends_on   =  ["deployKeyVaultPolicy"]
 }
 
 resource "azurerm_key_vault_secret" "dataAdministratorLogin" {
   name     = "ContosoTravel--DataAdministratorLogin"
   value    = ""
   key_vault_id = "${var.keyVaultId}"
-  depends_on   =  ["deployKeyVaultPolicy"]
 }
 
 resource "azurerm_key_vault_secret" "dataAdministratorLoginPassword" {
   name     = "ContosoTravel--DataAdministratorLoginPassword"
   value    = ""
   key_vault_id = "${var.keyVaultId}"
-  depends_on   =  ["deployKeyVaultPolicy"]
 }
 
 resource "azurerm_key_vault_secret" "dataAccountUserName" {
   name     = "ContosoTravel--DataAccountUserName"
   value    = ""
   key_vault_id = "${var.keyVaultId}"
-  depends_on   =  ["deployKeyVaultPolicy"]
 }
 
 
@@ -116,5 +113,4 @@ resource "azurerm_key_vault_secret" "dataAccountPassword" {
   name     = "ContosoTravel--DataAccountPassword"
   value    = "${azurerm_cosmosdb_account.cosmosdb.primary_master_key}"
   key_vault_id = "${var.keyVaultId}"
-  depends_on   =  ["deployKeyVaultPolicy"]
 }

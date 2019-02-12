@@ -240,6 +240,7 @@ module "eventing" {
   keyVaultId        = "${azurerm_key_vault.keyVault.id}"
   storageAccountId  = "${azurerm_storage_account.storageAccount.id}"
   logAnalyticsId    = "${azurerm_log_analytics_workspace.logAnalytics.id}"  
+  keyVaultPermId    = "${azurerm_key_vault_access_policy.deployKeyVaultPolicy.id}"
 }
 
 module "service" {
@@ -281,6 +282,7 @@ module "data" {
   logAnalyticsId    = "${azurerm_log_analytics_workspace.logAnalytics.id}"
   logAnalyticsName  = "${azurerm_log_analytics_workspace.logAnalytics.name}"
   keyVaultId        = "${azurerm_key_vault.keyVault.id}"
+  keyVaultPermId    = "${azurerm_key_vault_access_policy.deployKeyVaultPolicy.id}"
 }
 
 module "appGateway" {

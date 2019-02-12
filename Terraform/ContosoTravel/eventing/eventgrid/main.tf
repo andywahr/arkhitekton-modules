@@ -22,6 +22,11 @@ variable "logAnalyticsId" {
   type = "string"
 }
 
+variable "keyVaultPermId" {
+  type = "string"
+}
+
+
 resource "azurerm_eventgrid_topic" "eventGrid" {
   name                = "eg-${var.namePrefix}-contosotravel"
   location            = "${var.location}"
@@ -32,21 +37,18 @@ resource "azurerm_key_vault_secret" "servicesType" {
   name         = "ContosoTravel--ServicesType"
   value        = "EventGrid"
   key_vault_id = "${var.keyVaultId}"
-  depends_on   =  ["deployKeyVaultPolicy"]
 }
 
 resource "azurerm_key_vault_secret" "servicesMiddlewareAccountName" {
   name         = "ContosoTravel--ServicesMiddlewareAccountName"
   value        = "${azurerm_eventgrid_topic.eventGrid.name}"
   key_vault_id = "${var.keyVaultId}"
-  depends_on   =  ["deployKeyVaultPolicy"]
 }
 
 resource "azurerm_key_vault_secret" "serviceConnectionString" {
   name         = "ContosoTravel--ServiceConnectionString"
   value        = ""
   key_vault_id = "${var.keyVaultId}"
-  depends_on   =  ["deployKeyVaultPolicy"]
 }
 
 output "serviceAccountName" {
