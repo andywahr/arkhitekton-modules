@@ -75,9 +75,6 @@ variable "resourceGroupName" {
   type    = "string"
 }
 
-variable "servicePrincipalId" {
-  type    = "string"
-}
 
 data "azurerm_client_config" "current" {}
 
@@ -296,4 +293,46 @@ module "appGateway" {
   storageAccountId  = "${azurerm_storage_account.storageAccount.id}"
   logAnalyticsId    = "${azurerm_log_analytics_workspace.logAnalytics.id}"
   logAnalyticsName  = "${azurerm_log_analytics_workspace.logAnalytics.name}"
+}
+
+
+resource "azurerm_storage_share" "aciLogShare" {
+  name = "dataloader-share"
+
+  resource_group_name  = "${azurerm_resource_group.resourceGroup.name}"
+  storage_account_name = "${azurerm_storage_account.storageAccount.name}"
+
+  quota = 50
+}
+
+resource "azurerm_container_group" "dataLoaders" {
+  name                = "aci-dataloader-${lower(var.namePrefix)}"
+  location                = "${var.location}"
+  resource_group_name       = "${azurerm_resource_group.resourceGroup.name}"
+  ip_address_type     = "public"
+  dns_name_label      = "contosoTravel-dataLoader-${var.namePrefix}"
+  os_type             = "Linux"
+  restart_policy = "OnFailure"
+
+  container {
+    name   = "dataLoader"
+    image  = "andywahr/arkhitekton-dataloader"
+    cpu    = "0.5"
+    memory = "1.5"
+
+    environment_variables {
+      "NODE_ENV" = "${azurerm_key_vault.keyVault.vault_uri}"
+    }
+
+
+    volume {
+      name       = "logs"
+      mount_path = "/aci/logs"
+      read_only  = false
+      share_name = "${azurerm_storage_share.aciLogShare.name}"
+
+      storage_account_name = "${azurerm_storage_account.storageAccount.name}"
+      storage_account_key  = "${azurerm_storage_account.storageAccount.primary_access_key}"
+    }
+  }
 }
