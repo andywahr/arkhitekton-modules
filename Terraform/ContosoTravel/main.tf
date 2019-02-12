@@ -73,7 +73,6 @@ variable "bot" {
 
 variable "resourceGroupName" {
   type    = "string"
-  default = "rg-${var.namePrefix}"
 }
 
 variable "servicePrincipalId" {
@@ -203,21 +202,21 @@ resource "azurerm_key_vault_secret" "subscriptionId" {
   name         = "ContosoTravel--SubscriptionId"
   value        = "${data.azurerm_client_config.current.subscription_id}"
   key_vault_id = "${azurerm_key_vault.keyVault.id}"
-  depends_on   =  ["deployKeyVaultPolicy"]
+  depends_on   =  ["azurerm_key_vault_access_policy.deployKeyVaultPolicy"]
 }
 
 resource "azurerm_key_vault_secret" "tenantId" {
   name         = "ContosoTravel--SubscriptionId"
   value        = "${data.azurerm_client_config.current.tenant_id}"
   key_vault_id = "${azurerm_key_vault.keyVault.id}"
-  depends_on   =  ["deployKeyVaultPolicy"]
+  depends_on   =  ["azurerm_key_vault_access_policy.deployKeyVaultPolicy"]
 }
 
 resource "azurerm_key_vault_secret" "resourceGroupName" {
   name         = "ContosoTravel--ResourceGroupName"
   value        = "${azurerm_resource_group.resourceGroup.name}"
   key_vault_id = "${azurerm_key_vault.keyVault.id}"
-  depends_on   =  ["deployKeyVaultPolicy"]
+  depends_on   =  ["azurerm_key_vault_access_policy.deployKeyVaultPolicy"]
 }
 
 resource "azurerm_log_analytics_solution" "keyVaultAnalytics" {
