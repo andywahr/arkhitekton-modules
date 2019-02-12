@@ -101,40 +101,47 @@ resource "azurerm_key_vault_secret" "dataType" {
   name     = "ContosoTravel--DataType"
   value    = "SQL"
   key_vault_id = "${var.keyVaultId}"
+  depends_on   =  ["deployKeyVaultPolicy"]
 }
 
 resource "azurerm_key_vault_secret" "dataAccountName" {
   name     = "ContosoTravel--DataAccountName"
   value    = "${azurerm_sql_server.sqlServer.name}"
   key_vault_id = "${var.keyVaultId}"
+  depends_on   =  ["deployKeyVaultPolicy"]
 }
 
 resource "azurerm_key_vault_secret" "databaseName" {
   name     = "ContosoTravel--DatabaseName"
   value    = "ContosoTravel"
   key_vault_id = "${var.keyVaultId}"
+  depends_on   =  ["deployKeyVaultPolicy"]
 }
 
 resource "azurerm_key_vault_secret" "dataAdministratorLogin" {
   name     = "ContosoTravel--DataAdministratorLogin"
   value    = "${random_string.dataAdministratorLogin.result}"
   key_vault_id = "${var.keyVaultId}"
+  depends_on   =  ["deployKeyVaultPolicy"]
 }
 
 resource "azurerm_key_vault_secret" "dataAdministratorLoginPassword" {
   name     = "ContosoTravel--DataAdministratorLoginPassword"
   value    = "${random_string.dataAdministratorLoginPassword.result}"
   key_vault_id = "${var.keyVaultId}"
+  depends_on   =  ["deployKeyVaultPolicy"]
 }
 
 resource "azurerm_key_vault_secret" "dataAccountUserName" {
   name     = "ContosoTravel--DataAccountUserName"
   value    = "${random_string.dataAccountUserName.result}"
   key_vault_id = "${var.keyVaultId}"
+  depends_on   =  ["deployKeyVaultPolicy"]
 }
 
 resource "azurerm_key_vault_secret" "dataAccountPassword" {
   name     = "ContosoTravel--DataAccountPassword"
   value    = "${random_string.dataAccountPassword.result}"
   key_vault_id = "${var.keyVaultId}"
+  depends_on   =  ["deployKeyVaultPolicy"]
 }

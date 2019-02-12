@@ -91,17 +91,21 @@ resource "azurerm_key_vault_secret" "servicesType" {
   name         = "ContosoTravel--ServicesType"
   value        = "ServiceBus"
   key_vault_id = "${var.keyVaultId}"
+  depends_on   =  ["deployKeyVaultPolicy"]
 }
 
 resource "azurerm_key_vault_secret" "servicesMiddlewareAccountName" {
   name         = "ContosoTravel--ServicesMiddlewareAccountName"
   value        = "${azurerm_servicebus_namespace.serviceBus.name}"
   key_vault_id = "${var.keyVaultId}"
+  depends_on   =  ["deployKeyVaultPolicy"]
 }
+
 resource "azurerm_key_vault_secret" "serviceConnectionString" {
   name         = "ContosoTravel--ServiceConnectionString"
   value        = "${azurerm_servicebus_queue_authorization_rule.serviceBusWriterRule.primary_connection_string}"
   key_vault_id = "${var.keyVaultId}"
+  depends_on   =  ["deployKeyVaultPolicy"]
 }
 
 output "serviceAccountName" {

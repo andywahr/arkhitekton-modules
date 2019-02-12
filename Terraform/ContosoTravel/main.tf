@@ -71,14 +71,19 @@ variable "bot" {
   default = "false"
 }
 
-locals {
-  resourceGroupName = "rg-${var.namePrefix}"
+variable "resourceGroupName" {
+  type    = "string"
+  default = "rg-${var.namePrefix}"
+}
+
+variable "servicePrincipalId" {
+  type    = "string"
 }
 
 data "azurerm_client_config" "current" {}
 
 resource "azurerm_resource_group" "resourceGroup" {
-  name     = "${local.resourceGroupName}"
+  name     = "${var.resourceGroupName}"
   location = "${var.location}"
 }
 
@@ -186,7 +191,7 @@ resource "azurerm_key_vault_access_policy" "deployKeyVaultPolicy" {
   key_vault_id = "${azurerm_key_vault.keyVault.id}"
 
   tenant_id = "${data.azurerm_client_config.current.tenant_id}"
-  object_id = "${data.azurerm_client_config.current.service_principal_object_id}"
+  object_id = "${var.servicePrincipalId}"
 
   secret_permissions = [
     "set",
@@ -198,18 +203,21 @@ resource "azurerm_key_vault_secret" "subscriptionId" {
   name         = "ContosoTravel--SubscriptionId"
   value        = "${data.azurerm_client_config.current.subscription_id}"
   key_vault_id = "${azurerm_key_vault.keyVault.id}"
+  depends_on   =  ["deployKeyVaultPolicy"]
 }
 
 resource "azurerm_key_vault_secret" "tenantId" {
   name         = "ContosoTravel--SubscriptionId"
   value        = "${data.azurerm_client_config.current.tenant_id}"
   key_vault_id = "${azurerm_key_vault.keyVault.id}"
+  depends_on   =  ["deployKeyVaultPolicy"]
 }
 
 resource "azurerm_key_vault_secret" "resourceGroupName" {
   name         = "ContosoTravel--ResourceGroupName"
   value        = "${azurerm_resource_group.resourceGroup.name}"
   key_vault_id = "${azurerm_key_vault.keyVault.id}"
+  depends_on   =  ["deployKeyVaultPolicy"]
 }
 
 resource "azurerm_log_analytics_solution" "keyVaultAnalytics" {
