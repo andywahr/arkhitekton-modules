@@ -84,18 +84,18 @@ resource "azurerm_monitor_diagnostic_setting" "dataDiag" {
   }
 }
 
-resource "azurerm_log_analytics_solution" "sqlInsights" {
-  solution_name         = "SQLInsights"
-  location            = "East US"
-  resource_group_name = "${var.resourceGroupName}"
-  workspace_resource_id = "${var.logAnalyticsId}"
-  workspace_name        = "${var.logAnalyticsName}"
-
-  plan {
-    publisher = "Microsoft"
-    product   = "OMSGallery/AzureSQLAnalytics"
-  }
-}
+#resource "azurerm_log_analytics_solution" "sqlInsights" {
+#  solution_name         = "SQLInsights"
+#  location            = "East US"
+#  resource_group_name = "${var.resourceGroupName}"
+#  workspace_resource_id = "${var.logAnalyticsId}"
+#  workspace_name        = "${var.logAnalyticsName}"
+#
+#  plan {
+#    publisher = "Microsoft"
+#    product   = "OMSGallery/AzureSQLAnalytics"
+#  }
+#}
 
 resource "azurerm_key_vault_secret" "dataType" {
   name     = "ContosoTravel--DataType"
