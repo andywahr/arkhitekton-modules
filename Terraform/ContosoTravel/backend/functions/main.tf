@@ -28,7 +28,27 @@ variable "appInsightsKey" {
   type = "string"
 }
 
+variable "keyVaultId" {
+  type = "string"
+}
+
 variable "storageConnectionString" {
+  type = "string"
+}
+
+variable "storageAccountId" {
+  type = "string"
+}
+
+variable "logAnalyticsId" {
+  type = "string"
+}
+
+variable "logAnalyticsName" {
+  type = "string"
+}
+
+variable "vnetName" {
   type = "string"
 }
 
@@ -39,8 +59,8 @@ resource "azurerm_app_service_plan" "serviceAppServicePlan" {
   kind                = "FunctionApp"
 
   sku {
-    tier = "Dynamic"
-    size = "Y1"
+    tier = "Standard"
+    size = "S1"
   }
 }
 
@@ -63,11 +83,35 @@ resource "azurerm_function_app" "service" {
     "FUNCTIONS_WORKER_RUNTIME"       = "dotnet"
     "ServiceBusConnection"           = "${var.serviceConnectionString}"
   }
+
 }
 
-resource "azurerm_key_vault_access_policy" "webKeyVaultPolicy" {
-  vault_name          = "${var.keyVaultAccountName}"
-  resource_group_name = "${var.resourceGroupName}"
+#resource "azurerm_monitor_diagnostic_setting" "serviceDiag" {
+#  name               = "${var.namePrefix}-serviceDiag"
+#  target_resource_id = "${azurerm_function_app.service.id}"
+#  storage_account_id = "${var.storageAccountId}"
+#  log_analytics_workspace_id = "${var.logAnalyticsId}"
+#
+#  log {
+#    category = "AuditEvent"
+#    enabled  = true
+#
+#    retention_policy {
+#      enabled = false
+#    }
+#  }
+#
+#  metric {
+#    category = "AllMetrics"
+#
+#    retention_policy {
+#      enabled = false
+#    }
+#  }
+#}
+
+resource "azurerm_key_vault_access_policy" "serviceKeyVaultPolicy" {
+  key_vault_id        = "${var.keyVaultId}"
 
   tenant_id = "${data.azurerm_client_config.current.tenant_id}"
   object_id = "${azurerm_function_app.service.identity.0.principal_id}"

@@ -3,13 +3,77 @@ variable "namePrefix" {
 }
 
 variable "location" {
-    type ="string"
+  type = "string"
+}
+
+variable "cdn" {
+  type    = "string"
+  default = "false"
+}
+
+variable "trafficmanager" {
+  type    = "string"
+  default = "false"
+}
+
+variable "apimgmt" {
+  type    = "string"
+  default = "false"
+}
+
+variable "firewall" {
+  type    = "string"
+  default = "false"
+}
+
+variable "appgateway" {
+  type    = "string"
+  default = "false"
+}
+
+variable "mobile" {
+  type    = "string"
+  default = "false"
+}
+
+variable "adb2c" {
+  type    = "string"
+  default = "false"
+}
+
+variable "streamanalytics" {
+  type    = "string"
+  default = "false"
+}
+
+variable "cognitiveservices" {
+  type    = "string"
+  default = "false"
+}
+
+variable "sqldatawarehouse" {
+  type    = "string"
+  default = "false"
+}
+
+variable "hdinsight" {
+  type    = "string"
+  default = "false"
+}
+
+variable "search" {
+  type    = "string"
+  default = "false"
+}
+
+variable "bot" {
+  type    = "string"
+  default = "false"
 }
 
 locals {
   resourceGroupName = "rg-${var.namePrefix}"
 }
-
 
 data "azurerm_client_config" "current" {}
 
@@ -22,8 +86,21 @@ resource "azurerm_log_analytics_workspace" "logAnalytics" {
   name                = "${var.namePrefix}logAnalytics"
   resource_group_name = "${azurerm_resource_group.resourceGroup.name}"
   location            = "East US"
-  sku                 = "pergb2018"
+  sku                 = "PerGB2018"
   retention_in_days   = 30
+}
+
+resource "azurerm_log_analytics_solution" "azureActivity" {
+  solution_name         = "AzureActivity"
+  location              = "East US"
+  resource_group_name   = "${azurerm_resource_group.resourceGroup.name}"
+  workspace_resource_id = "${azurerm_log_analytics_workspace.logAnalytics.id}"
+  workspace_name        = "${azurerm_log_analytics_workspace.logAnalytics.name}"
+
+  plan {
+    publisher = "Microsoft"
+    product   = "OMSGallery/AzureActivity"
+  }
 }
 
 resource "azurerm_virtual_network" "virtualNetwork" {
@@ -33,25 +110,15 @@ resource "azurerm_virtual_network" "virtualNetwork" {
   address_space       = ["10.0.0.0/16"]
 }
 
-resource "azurerm_subnet" "subnet1" {
-  name                 = "subnet1"
+resource "azurerm_subnet" "networkingSubnet" {
+  name                 = "networkingSubnet"
   resource_group_name  = "${azurerm_resource_group.resourceGroup.name}"
   virtual_network_name = "${azurerm_virtual_network.virtualNetwork.name}"
   address_prefix       = "10.0.0.0/24"
-  service_endpoints    = ["Microsoft.AzureActiveDirectory", "Microsoft.AzureCosmosDB", "Microsoft.EventHub", "Microsoft.KeyVault", "Microsoft.ServiceBus", "Microsoft.Sql", "Microsoft.Storage"]
-
-  delegation {
-    name = "acctestdelegation"
-
-    service_delegation {
-      name    = "Microsoft.ContainerInstance/containerGroups"
-      actions = ["Microsoft.Network/virtualNetworks/subnets/action"]
-    }
-  }
 }
 
-resource "azurerm_subnet" "subnet2" {
-  name                 = "subnet2"
+resource "azurerm_subnet" "appSubnet" {
+  name                 = "appSubnet"
   resource_group_name  = "${azurerm_resource_group.resourceGroup.name}"
   virtual_network_name = "${azurerm_virtual_network.virtualNetwork.name}"
   address_prefix       = "10.0.1.0/24"
@@ -70,7 +137,7 @@ resource "azurerm_storage_account" "storageAccount" {
 
   network_rules {
     bypass                     = ["AzureServices"]
-    virtual_network_subnet_ids = ["${azurerm_subnet.subnet1.id}", "${azurerm_subnet.subnet2.id}"]
+    virtual_network_subnet_ids = ["${azurerm_subnet.appSubnet.id}"]
   }
 }
 
@@ -91,33 +158,132 @@ resource "azurerm_key_vault" "keyVault" {
     name = "standard"
   }
 }
+resource "azurerm_monitor_diagnostic_setting" "keyVaultDiag" {
+  name               = "${var.namePrefix}-keyVaultDiag"
+  target_resource_id = "${azurerm_key_vault.keyVault.id}"
+  storage_account_id = "${azurerm_storage_account.storageAccount.id}"
+  log_analytics_workspace_id = "${azurerm_log_analytics_workspace.logAnalytics.id}"
+  
+  log {
+    category = "AuditEvent"
+    enabled  = true
+
+    retention_policy {
+      enabled = false
+    }
+  }
+
+  metric {
+    category = "AllMetrics"
+
+    retention_policy {
+      enabled = false
+    }
+  }
+}
+
+resource "azurerm_key_vault_access_policy" "deployKeyVaultPolicy" {
+  key_vault_id = "${azurerm_key_vault.keyVault.id}"
+
+  tenant_id = "${data.azurerm_client_config.current.tenant_id}"
+  object_id = "${data.azurerm_client_config.current.service_principal_object_id == "" ? "52f03f9f-cb9d-4607-b00c-751a6711d2cb" : data.azurerm_client_config.current.service_principal_object_id}"
+
+  secret_permissions = [
+    "set",
+  ]
+}
+
+resource "azurerm_key_vault_secret" "subscriptionId" {
+  name         = "ContosoTravel--SubscriptionId"
+  value        = "${data.azurerm_client_config.current.subscription_id}"
+  key_vault_id = "${azurerm_key_vault.keyVault.id}"
+}
+
+resource "azurerm_key_vault_secret" "tenantId" {
+  name         = "ContosoTravel--SubscriptionId"
+  value        = "${data.azurerm_client_config.current.tenant_id}"
+  key_vault_id = "${azurerm_key_vault.keyVault.id}"
+}
+
+resource "azurerm_key_vault_secret" "resourceGroupName" {
+  name         = "ContosoTravel--ResourceGroupName"
+  value        = "${azurerm_resource_group.resourceGroup.name}"
+  key_vault_id = "${azurerm_key_vault.keyVault.id}"
+}
+
+resource "azurerm_log_analytics_solution" "keyVaultAnalytics" {
+  solution_name         = "KeyVaultAnalytics"
+  location              = "East US"
+  resource_group_name   = "${azurerm_resource_group.resourceGroup.name}"
+  workspace_resource_id = "${azurerm_log_analytics_workspace.logAnalytics.id}"
+  workspace_name        = "${azurerm_log_analytics_workspace.logAnalytics.name}"
+
+  plan {
+    publisher = "Microsoft"
+    product   = "OMSGallery/KeyVaultAnalytics"
+  }
+}
 
 module "eventing" {
-  source = "./eventing/eventGrid"
-  namePrefix   = "${var.namePrefix}"
-  location = "${var.location}"
-  resourceGroupName = "${local.resourceGroupName}"
-} 
+  namePrefix        = "${var.namePrefix}"
+  location          = "${var.location}"
+  resourceGroupName = "${azurerm_resource_group.resourceGroup.name}"
+  keyVaultId        = "${azurerm_key_vault.keyVault.id}"
+  storageAccountId  = "${azurerm_storage_account.storageAccount.id}"
+  logAnalyticsId    = "${azurerm_log_analytics_workspace.logAnalytics.id}"  
+}
 
 module "service" {
-  source = "./backend/functions"
-  namePrefix   = "${var.namePrefix}"
-  location = "${var.location}"
-  resourceGroupName = "${local.resourceGroupName}"
+  namePrefix              = "${var.namePrefix}"
+  location                = "${var.location}"
+  resourceGroupName       = "${azurerm_resource_group.resourceGroup.name}"
   serviceConnectionString = "${module.eventing.serviceConnectionString}"
-  keyVaultUrl = "${azurerm_key_vault.keyVault.vault_uri}"
-  keyVaultAccountName = "${azurerm_key_vault.keyVault.name}"
-  appInsightsKey = "${azurerm_application_insights.appInsights.instrumentation_key}"
+  keyVaultUrl             = "${azurerm_key_vault.keyVault.vault_uri}"
+  keyVaultAccountName     = "${azurerm_key_vault.keyVault.name}"
+  keyVaultId              = "${azurerm_key_vault.keyVault.id}"
+  appInsightsKey          = "${azurerm_application_insights.appInsights.instrumentation_key}"
   storageConnectionString = "${azurerm_storage_account.storageAccount.primary_blob_connection_string}"
-} 
+  storageAccountId        = "${azurerm_storage_account.storageAccount.id}"
+  logAnalyticsId          = "${azurerm_log_analytics_workspace.logAnalytics.id}"
+  logAnalyticsName        = "${azurerm_log_analytics_workspace.logAnalytics.name}"
+  vnetName                = "${azurerm_subnet.appSubnet.name}"
+}
 
 module "webSite" {
-  source = "./web/appservice"
-  namePrefix   = "${var.namePrefix}"
-  location = "${var.location}"
-  resourceGroupName = "${local.resourceGroupName}"
-  serviceConnectionString = "${module.eventing.serviceConnectionString}"
-  keyVaultUrl = "${azurerm_key_vault.keyVault.vault_uri}"
-  keyVaultAccountName = "${azurerm_key_vault.keyVault.name}"
-  appInsightsKey = "${azurerm_application_insights.appInsights.instrumentation_key}"
-} 
+  namePrefix              = "${var.namePrefix}"
+  location                = "${var.location}"
+  resourceGroupName       = "${azurerm_resource_group.resourceGroup.name}"
+  keyVaultUrl             = "${azurerm_key_vault.keyVault.vault_uri}"
+  keyVaultAccountName     = "${azurerm_key_vault.keyVault.name}"
+  keyVaultId              = "${azurerm_key_vault.keyVault.id}"
+  appInsightsKey          = "${azurerm_application_insights.appInsights.instrumentation_key}"
+  storageAccountId        = "${azurerm_storage_account.storageAccount.id}"
+  logAnalyticsId          = "${azurerm_log_analytics_workspace.logAnalytics.id}"
+  logAnalyticsName        = "${azurerm_log_analytics_workspace.logAnalytics.name}"
+  vnetName                = "${azurerm_subnet.appSubnet.name}"
+}
+
+module "data" {
+  namePrefix        = "${var.namePrefix}"
+  location          = "${var.location}"
+  resourceGroupName = "${azurerm_resource_group.resourceGroup.name}"
+  vnetId            = "${azurerm_subnet.appSubnet.id}"
+  storageAccountId  = "${azurerm_storage_account.storageAccount.id}"
+  logAnalyticsId    = "${azurerm_log_analytics_workspace.logAnalytics.id}"
+  logAnalyticsName  = "${azurerm_log_analytics_workspace.logAnalytics.name}"
+  keyVaultId        = "${azurerm_key_vault.keyVault.id}"
+}
+
+module "appGateway" {
+  enabled           = "${var.appgateway}"
+  source            = "./front-end-networking/appgateway"
+  namePrefix        = "${var.namePrefix}"
+  location          = "${var.location}"
+  resourceGroupName = "${azurerm_resource_group.resourceGroup.name}"
+  vnetName          = "${azurerm_virtual_network.virtualNetwork.name}"
+  subnetId          = "${azurerm_subnet.networkingSubnet.id}"
+  webSiteFQDN       = "${module.webSite.webSiteFQDN}"
+  storageAccountId  = "${azurerm_storage_account.storageAccount.id}"
+  logAnalyticsId    = "${azurerm_log_analytics_workspace.logAnalytics.id}"
+  logAnalyticsName  = "${azurerm_log_analytics_workspace.logAnalytics.name}"
+}
