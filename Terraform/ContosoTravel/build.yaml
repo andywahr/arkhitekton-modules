@@ -1,0 +1,61 @@
+# a build with no CI
+trigger: none
+
+variables:
+  location: ''
+  namePrefix: ''
+  cdn: '' 
+  trafficmanager: '' 
+  apimgmt: ''
+  firewall: ''
+  appgateway: ''
+  mobile: ''
+  adb2c: '' 
+  streamanalytics: ''
+  cognitiveservices: ''
+  sqldatawarehouse: ''
+  hdinsight: ''
+  search: ''
+  bot: ''
+  
+jobs:
+- job: Deploy Infrastructure via Terraform
+  pool:
+    name: Hosted VS2017
+    demands: 
+    - msbuild
+    - visualstudio
+    - vstest
+  steps:
+  - task: qetza.replacetokens.replacetokens-task.replacetokens@3
+    displayName: 'Replace tokens in override.tf'
+    inputs:
+      rootDirectory: Terraform/ContosoTravel
+      targetFiles: override.tf
+  
+  - task: petergroenewegen.PeterGroenewegen-Xpirit-Vsts-Release-Terraform.Xpirit-Vsts-Release-Terraform.Terraform@2
+    displayName: 'Terraform init'
+    inputs:
+      TemplatePath: Terraform/ContosoTravel
+      Arguments: init
+      InstallTerraform: true
+      UseAzureSub: true
+      ConnectedServiceNameARM: $(ConnectedServiceName)
+  
+  - task: petergroenewegen.PeterGroenewegen-Xpirit-Vsts-Release-Terraform.Xpirit-Vsts-Release-Terraform.Terraform@2
+    displayName: 'Terraform plan'
+    inputs:
+      TemplatePath: Terraform/ContosoTravel
+      Arguments: 'init -var "location=$(location)" -var "namePrefix=$(namePrefix)"'
+      InstallTerraform: true
+      UseAzureSub: true
+      ConnectedServiceNameARM: $(ConnectedServiceName)
+  
+  - task: petergroenewegen.PeterGroenewegen-Xpirit-Vsts-Release-Terraform.Xpirit-Vsts-Release-Terraform.Terraform@2
+    displayName: 'Terraform apply'
+    inputs:
+      TemplatePath: Terraform/ContosoTravel
+      Arguments: 'apply -var "location=$(location)" -var "namePrefix=$(namePrefix)" -var "cdn=$(cdn)" -var "trafficmanager=$(trafficmanager)" -var "apimgmt=$(apimgmt)" -var "firewall=$(firewall)" -var "appgateway=$(appgateway)" -var "mobile=$(mobile)" -var "adb2c=$(adb2c)" -var "streamanalytics=$(streamanalytics)" -var "cognitiveservices=$(cognitiveservices)" -var "sqldatawarehouse=$(sqldatawarehouse)" -var "hdinsight=$(hdinsight)" -var "search=$(search)" -var "bot=$(bot)" -auto-approve'
+      InstallTerraform: true
+      UseAzureSub: true
+      ConnectedServiceNameARM: $(ConnectedServiceName)
