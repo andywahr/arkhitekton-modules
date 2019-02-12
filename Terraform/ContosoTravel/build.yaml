@@ -17,6 +17,10 @@ variables:
   hdinsight: ''
   search: ''
   bot: ''
+  backend: ''
+  data: ''
+  eventing: ''
+  web: ''
   
 jobs:
 - job: Deploy Infrastructure via Terraform
