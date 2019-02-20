@@ -267,6 +267,7 @@ module "webSite" {
   logAnalyticsId          = "${azurerm_log_analytics_workspace.logAnalytics.id}"
   logAnalyticsName        = "${azurerm_log_analytics_workspace.logAnalytics.name}"
   vnetName                = "${azurerm_subnet.appSubnet.name}"
+  vnetId                  = "${azurerm_subnet.appSubnet.id}"
 }
 
 module "data" {

@@ -44,6 +44,9 @@ variable "vnetName" {
   type = "string"
 }
 
+variable "vnetId" {
+  type = "string"
+}
 
 resource "azurerm_app_service_plan" "webSiteAppServicePlan" {
   name                = "asp-contosotravel-${var.namePrefix}-web"
