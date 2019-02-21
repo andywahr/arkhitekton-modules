@@ -72,11 +72,12 @@ variable "bot" {
 }
 
 variable "resourceGroupName" {
-  type    = "string"
+  type = "string"
 }
 
-
-data "azurerm_client_config" "current" {}
+variable "my_principal_object_id" {
+  type = "string"
+}
 
 resource "azurerm_resource_group" "resourceGroup" {
   name     = "${var.resourceGroupName}"
@@ -108,21 +109,21 @@ resource "azurerm_virtual_network" "virtualNetwork" {
   name                = "${var.namePrefix}vnet"
   location            = "${azurerm_resource_group.resourceGroup.location}"
   resource_group_name = "${azurerm_resource_group.resourceGroup.name}"
-  address_space       = ["10.0.0.0/16"]
+  address_space       = ["10.0.0.0/8"]
 }
 
 resource "azurerm_subnet" "networkingSubnet" {
   name                 = "networkingSubnet"
   resource_group_name  = "${azurerm_resource_group.resourceGroup.name}"
   virtual_network_name = "${azurerm_virtual_network.virtualNetwork.name}"
-  address_prefix       = "10.0.0.0/24"
+  address_prefix       = "10.0.0.0/16"
 }
 
 resource "azurerm_subnet" "appSubnet" {
   name                 = "appSubnet"
   resource_group_name  = "${azurerm_resource_group.resourceGroup.name}"
   virtual_network_name = "${azurerm_virtual_network.virtualNetwork.name}"
-  address_prefix       = "10.0.1.0/24"
+  address_prefix       = "10.1.0.0/16"
   service_endpoints    = ["Microsoft.AzureActiveDirectory", "Microsoft.AzureCosmosDB", "Microsoft.EventHub", "Microsoft.KeyVault", "Microsoft.ServiceBus", "Microsoft.Sql", "Microsoft.Storage"]
 }
 
@@ -136,10 +137,10 @@ resource "azurerm_storage_account" "storageAccount" {
   enable_blob_encryption    = true
   enable_file_encryption    = true
 
-  network_rules {
-    bypass                     = ["AzureServices"]
-    virtual_network_subnet_ids = ["${azurerm_subnet.appSubnet.id}"]
-  }
+  #  network_rules {
+  #    bypass                     = ["AzureServices", "Logging", "Metrics"]
+  #    virtual_network_subnet_ids = ["${azurerm_subnet.appSubnet.id}"]
+  #  }
 }
 
 resource "azurerm_application_insights" "appInsights" {
@@ -148,6 +149,8 @@ resource "azurerm_application_insights" "appInsights" {
   resource_group_name = "${azurerm_resource_group.resourceGroup.name}"
   application_type    = "Web"
 }
+
+data "azurerm_client_config" "current" {}
 
 resource "azurerm_key_vault" "keyVault" {
   name                = "kv${var.namePrefix}"
@@ -159,12 +162,13 @@ resource "azurerm_key_vault" "keyVault" {
     name = "standard"
   }
 }
+
 resource "azurerm_monitor_diagnostic_setting" "keyVaultDiag" {
-  name               = "${var.namePrefix}-keyVaultDiag"
-  target_resource_id = "${azurerm_key_vault.keyVault.id}"
-  storage_account_id = "${azurerm_storage_account.storageAccount.id}"
+  name                       = "${var.namePrefix}-keyVaultDiag"
+  target_resource_id         = "${azurerm_key_vault.keyVault.id}"
+  storage_account_id         = "${azurerm_storage_account.storageAccount.id}"
   log_analytics_workspace_id = "${azurerm_log_analytics_workspace.logAnalytics.id}"
-  
+
   log {
     category = "AuditEvent"
     enabled  = true
@@ -187,11 +191,11 @@ resource "azurerm_key_vault_access_policy" "deployKeyVaultPolicy" {
   key_vault_id = "${azurerm_key_vault.keyVault.id}"
 
   tenant_id = "${data.azurerm_client_config.current.tenant_id}"
-  object_id = "${data.azurerm_client_config.current.service_principal_object_id}"
+  object_id = "${data.azurerm_client_config.current.service_principal_object_id == "" ? var.my_principal_object_id : data.azurerm_client_config.current.service_principal_object_id}"
 
   secret_permissions = [
     "set",
-    "get"
+    "get",
   ]
 }
 
@@ -199,21 +203,21 @@ resource "azurerm_key_vault_secret" "subscriptionId" {
   name         = "ContosoTravel--SubscriptionId"
   value        = "${data.azurerm_client_config.current.subscription_id}"
   key_vault_id = "${azurerm_key_vault.keyVault.id}"
-  depends_on   =  ["azurerm_key_vault_access_policy.deployKeyVaultPolicy"]
+  depends_on   = ["azurerm_key_vault_access_policy.deployKeyVaultPolicy"]
 }
 
 resource "azurerm_key_vault_secret" "tenantId" {
   name         = "ContosoTravel--SubscriptionId"
   value        = "${data.azurerm_client_config.current.tenant_id}"
   key_vault_id = "${azurerm_key_vault.keyVault.id}"
-  depends_on   =  ["azurerm_key_vault_access_policy.deployKeyVaultPolicy"]
+  depends_on   = ["azurerm_key_vault_access_policy.deployKeyVaultPolicy"]
 }
 
 resource "azurerm_key_vault_secret" "resourceGroupName" {
   name         = "ContosoTravel--ResourceGroupName"
   value        = "${azurerm_resource_group.resourceGroup.name}"
   key_vault_id = "${azurerm_key_vault.keyVault.id}"
-  depends_on   =  ["azurerm_key_vault_access_policy.deployKeyVaultPolicy"]
+  depends_on   = ["azurerm_key_vault_access_policy.deployKeyVaultPolicy"]
 }
 
 resource "azurerm_log_analytics_solution" "keyVaultAnalytics" {
@@ -235,7 +239,7 @@ module "eventing" {
   resourceGroupName = "${azurerm_resource_group.resourceGroup.name}"
   keyVaultId        = "${azurerm_key_vault.keyVault.id}"
   storageAccountId  = "${azurerm_storage_account.storageAccount.id}"
-  logAnalyticsId    = "${azurerm_log_analytics_workspace.logAnalytics.id}"  
+  logAnalyticsId    = "${azurerm_log_analytics_workspace.logAnalytics.id}"
   keyVaultPermId    = "${azurerm_key_vault_access_policy.deployKeyVaultPolicy.id}"
 }
 
@@ -256,18 +260,18 @@ module "service" {
 }
 
 module "webSite" {
-  namePrefix              = "${var.namePrefix}"
-  location                = "${var.location}"
-  resourceGroupName       = "${azurerm_resource_group.resourceGroup.name}"
-  keyVaultUrl             = "${azurerm_key_vault.keyVault.vault_uri}"
-  keyVaultAccountName     = "${azurerm_key_vault.keyVault.name}"
-  keyVaultId              = "${azurerm_key_vault.keyVault.id}"
-  appInsightsKey          = "${azurerm_application_insights.appInsights.instrumentation_key}"
-  storageAccountId        = "${azurerm_storage_account.storageAccount.id}"
-  logAnalyticsId          = "${azurerm_log_analytics_workspace.logAnalytics.id}"
-  logAnalyticsName        = "${azurerm_log_analytics_workspace.logAnalytics.name}"
-  vnetName                = "${azurerm_subnet.appSubnet.name}"
-  vnetId                  = "${azurerm_subnet.appSubnet.id}"
+  namePrefix          = "${var.namePrefix}"
+  location            = "${var.location}"
+  resourceGroupName   = "${azurerm_resource_group.resourceGroup.name}"
+  keyVaultUrl         = "${azurerm_key_vault.keyVault.vault_uri}"
+  keyVaultAccountName = "${azurerm_key_vault.keyVault.name}"
+  keyVaultId          = "${azurerm_key_vault.keyVault.id}"
+  appInsightsKey      = "${azurerm_application_insights.appInsights.instrumentation_key}"
+  storageAccountId    = "${azurerm_storage_account.storageAccount.id}"
+  logAnalyticsId      = "${azurerm_log_analytics_workspace.logAnalytics.id}"
+  logAnalyticsName    = "${azurerm_log_analytics_workspace.logAnalytics.name}"
+  vnetName            = "${azurerm_subnet.appSubnet.name}"
+  vnetId              = "${azurerm_subnet.appSubnet.id}"
 }
 
 module "data" {
@@ -296,7 +300,6 @@ module "appGateway" {
   logAnalyticsName  = "${azurerm_log_analytics_workspace.logAnalytics.name}"
 }
 
-
 resource "azurerm_storage_share" "aciLogShare" {
   name = "dataloader-share"
 
@@ -308,23 +311,27 @@ resource "azurerm_storage_share" "aciLogShare" {
 
 resource "azurerm_container_group" "dataLoaders" {
   name                = "aci-dataloader-${lower(var.namePrefix)}"
-  location                = "${var.location}"
-  resource_group_name       = "${azurerm_resource_group.resourceGroup.name}"
+  location            = "${var.location}"
+  resource_group_name = "${azurerm_resource_group.resourceGroup.name}"
   ip_address_type     = "public"
   dns_name_label      = "contosoTravel-dataLoader-${var.namePrefix}"
   os_type             = "Linux"
-  restart_policy = "OnFailure"
+  restart_policy      = "OnFailure"
 
   container {
-    name   = "dataLoader"
+    name   = "dataloader-aci-logs"
     image  = "andywahr/arkhitekton-dataloader"
     cpu    = "0.5"
     memory = "1.5"
 
+    ports = {
+      port     = 80
+      protocol = "TCP"
+    }
+
     environment_variables {
       "NODE_ENV" = "${azurerm_key_vault.keyVault.vault_uri}"
     }
-
 
     volume {
       name       = "logs"

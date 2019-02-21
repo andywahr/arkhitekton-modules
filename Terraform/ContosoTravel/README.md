@@ -17,4 +17,20 @@ module "webSite" {
 module "service" {
     source = "backend/functions"
 }
+
+variable "namePrefix" {
+  default = "adwter4"
+}
+
+variable "location" {
+  default = "westus2"
+}
+
+variable "resourceGroupName" {
+  default = "rg-adwter4"
+}
+
+variable "my_principal_object_id" {
+  default = "(Your Object Id from Azure AD for testing only)"
+}
 ````
