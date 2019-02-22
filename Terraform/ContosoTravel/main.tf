@@ -77,6 +77,7 @@ variable "resourceGroupName" {
 
 variable "my_principal_object_id" {
   type = "string"
+  default = ""
 }
 
 resource "azurerm_resource_group" "resourceGroup" {
