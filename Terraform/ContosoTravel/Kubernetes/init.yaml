@@ -4,8 +4,8 @@ metadata:
   name: akspodidentity
 spec:
   type: 0
-  ResourceID: ID   #az identity list --query [].id --output tsv  --resource-group RESOURCEGROUP --subscription SUBSCRIPTION
-  ClientID: CLIENTID #az identity list --query [].clientId --output tsv  --resource-group RESOURCEGROUP --subscription SUBSCRIPTION
+  ResourceID: $ID$
+  ClientID: $CLIENTID$
 ---
 apiVersion: "aadpodidentity.k8s.io/v1"
 kind: AzureIdentityBinding
@@ -33,3 +33,5 @@ subjects:
   - kind: ServiceAccount
     name: tiller
     namespace: kube-system 
+
+
