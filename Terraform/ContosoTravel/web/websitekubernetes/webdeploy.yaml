@@ -20,14 +20,14 @@ spec:
     spec:
       containers:
       - name: contosotravel-web
-        image: acrContosoTravelNAMEPREFIX.azurecr.io/contoso-travel-web
+        image: acrContosoTravel$NAMEPREFIX$.azurecr.io/contoso-travel-web
         env:
         - name: KeyVaultUrl
-          value: https://kvNAMEPREFIX.vault.azure.net/
+          value: https://kv$NAMEPREFIX$.vault.azure.net/
         - name: APPINSIGHTS_INSTRUMENTATIONKEY
-          value: APPINSIGHTSKEY
+          value: $APPINSIGHTSKEY$
         - name: KeyVaultAccountName
-          value: kvNAMEPREFIX
+          value: kv$NAMEPREFIX$
         - name: WEBSITE_NODE_DEFAULT_VERSION
           value: 10.6.0          
 ---
