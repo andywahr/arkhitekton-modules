@@ -109,7 +109,7 @@ resource "azurerm_role_assignment" "aksACRRoleAssignmentRead" {
 resource "azurerm_role_assignment" "aksACRRoleAssignmentWrite" {
   scope                = "/subscriptions/${data.azurerm_client_config.current.subscription_id}/resourceGroups/${var.resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/${azurerm_container_registry.acr.name}"
   role_definition_name = "AcrPush"
-  principal_id         = "${data.azurerm_client_config.current.service_principal_object_id == "" ? var.my_principal_object_id : data.azurerm_client_config.current.service_principal_object_id}"
+  principal_id         = "a14de615-33b0-4b0f-8045-477c2aa11460" #"${data.azurerm_client_config.current.service_principal_object_id == "" ? var.my_principal_object_id : data.azurerm_client_config.current.service_principal_object_id}"
 }
 
 # Create managed Kubernetes cluster (AKS)
