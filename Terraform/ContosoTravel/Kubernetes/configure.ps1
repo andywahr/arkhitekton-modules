@@ -32,11 +32,11 @@ function replaceInFiles([string]$fileName) {
   sc -Path $fileName -Value $contents -Force
 }
 
-replaceInFiles '.\init.yaml'
+replaceInFiles "$PSScriptRoot\init.yaml"
 replaceInFiles $pathToDeploy
 
 kubectl create -f https://raw.githubusercontent.com/Azure/aad-pod-identity/master/deploy/infra/deployment.yaml
-kubectl apply -f init.yaml
+kubectl apply -f "$PSScriptRoot\init.yaml"
 
 if ( $includeNginx )
 {
