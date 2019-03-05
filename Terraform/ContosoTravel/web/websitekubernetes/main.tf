@@ -48,7 +48,11 @@ variable "vnetId" {
   type = "string"
 }
 
-variable "customServicePrincipalName" {
+variable "servicePrincipalClientId" {
+  type = "string"
+}
+
+variable "servicePrincipalSecretName" {
   type = "string"
 }
 
@@ -66,7 +70,8 @@ module "aksInstall" {
   logAnalyticsName = "${var.logAnalyticsName}"
   vnetName = "${var.vnetName}"
   vnetId = "${var.vnetId}"
-  customServicePrincipalName = "${var.customServicePrincipalName}"
+  servicePrincipalClientId = "${var.servicePrincipalClientId}"
+  servicePrincipalSecretName = "${var.servicePrincipalSecretName}"
 }
 
 # Create Static Public IP Address to be used by Nginx Ingress

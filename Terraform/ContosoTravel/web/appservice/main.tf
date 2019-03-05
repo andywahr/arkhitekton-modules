@@ -48,7 +48,11 @@ variable "vnetId" {
   type = "string"
 }
 
-variable "customServicePrincipalName" {
+variable "servicePrincipalClientId" {
+  type = "string"
+}
+
+variable "servicePrincipalSecretName" {
   type = "string"
 }
 

@@ -48,17 +48,16 @@ variable "vnetId" {
   type = "string"
 }
 
-variable "customServicePrincipalName" {
+variable "servicePrincipalClientId" {
   type = "string"
 }
 
-data "azurerm_key_vault_secret" "spClientId" {
-  name      = "${var.customServicePrincipalName}-ClientID"
-  vault_uri = "https://kv-arkhitekton.vault.azure.net/"
+variable "servicePrincipalSecretName" {
+  type = "string"
 }
 
 data "azurerm_key_vault_secret" "spClientSecret" {
-  name      = "${var.customServicePrincipalName}-ClientSecret"
+  name      = "${var.servicePrincipalSecretName}"
   vault_uri = "https://kv-arkhitekton.vault.azure.net/"
 }
 
@@ -73,7 +72,7 @@ resource "azurerm_user_assigned_identity" "aksPodIdentity" {
 resource "azurerm_role_assignment" "aksPodIdentityRoleAssignment" {
   scope                = "/subscriptions/${data.azurerm_client_config.current.subscription_id}/resourceGroups/${var.resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/${azurerm_user_assigned_identity.aksPodIdentity.name}"
   role_definition_name = "Managed Identity Operator"
-  principal_id         = "${data.azurerm_key_vault_secret.spClientId.value}"
+  principal_id         = "${var.servicePrincipalClientId}"
 }
 
 # Create ACR
@@ -89,7 +88,7 @@ resource "azurerm_container_registry" "acr" {
 resource "azurerm_role_assignment" "aksACRRoleAssignmentRead" {
   scope                = "/subscriptions/${data.azurerm_client_config.current.subscription_id}/resourceGroups/${var.resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/${azurerm_container_registry.acr.name}"
   role_definition_name = "AcrPull"
-  principal_id         = "${data.azurerm_key_vault_secret.spClientId.value}"
+  principal_id         = "${var.servicePrincipalClientId}"
 }
 
 resource "azurerm_role_assignment" "aksACRRoleAssignmentWrite" {
@@ -115,7 +114,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
   }
 
   service_principal {
-    client_id     = "${data.azurerm_key_vault_secret.spClientId.value}"
+    client_id     = "${var.servicePrincipalClientId}"
     client_secret = "${data.azurerm_key_vault_secret.spClientSecret.value}"
   }
 
