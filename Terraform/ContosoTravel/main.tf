@@ -80,6 +80,10 @@ variable "my_principal_object_id" {
   default = ""
 }
 
+variable "customServicePrincipalName" {
+  type = "string"
+}
+
 resource "azurerm_resource_group" "resourceGroup" {
   name     = "${var.resourceGroupName}"
   location = "${var.location}"
@@ -273,6 +277,7 @@ module "webSite" {
   logAnalyticsName    = "${azurerm_log_analytics_workspace.logAnalytics.name}"
   vnetName            = "${azurerm_subnet.appSubnet.name}"
   vnetId              = "${azurerm_subnet.appSubnet.id}"
+  customServicePrincipalName = "${var.customServicePrincipalName}"
 }
 
 module "data" {

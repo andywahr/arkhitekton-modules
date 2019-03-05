@@ -9,4 +9,10 @@
 },
 "SubscriptionId" : {
     "value": "SUBSCRIPTIONID"
+},
+"ServicePrincipalClientId" : {
+    "value": "SERVICEPRINCIPALCLIENTID"
+},
+"ServicePrincipalClientSecret" : {
+    "value": "SERVICEPRINCIPALCLIENTSECRET"
 }

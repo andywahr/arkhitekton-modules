@@ -48,32 +48,18 @@ variable "vnetId" {
   type = "string"
 }
 
-variable "my_principal_object_id" {
+variable "customServicePrincipalName" {
   type = "string"
-  default = ""
 }
 
-# Create Azure AD Application for Service Principal
-resource "azuread_application" "aks" {
-  name = "ContosoTravel-kub-${var.namePrefix}-sp"
+data "azurerm_key_vault_secret" "spClientId" {
+  name      = "${var.customServicePrincipalName}-ClientID"
+  vault_uri = "https://kv-arkhitekton.vault.azure.net/"
 }
 
-# Create Service Principal
-resource "azuread_service_principal" "aks" {
-  application_id = "${azuread_application.aks.application_id}"
-}
-
-# Generate random string to be used for Service Principal Password
-resource "random_string" "password" {
-  length  = 32
-  special = true
-}
-
-# Create Service Principal password
-resource "azuread_service_principal_password" "aks" {
-  end_date             = "2299-12-30T23:00:00Z"                # Forever
-  service_principal_id = "${azuread_service_principal.aks.id}"
-  value                = "${random_string.password.result}"
+data "azurerm_key_vault_secret" "spClientSecret" {
+  name      = "${var.customServicePrincipalName}-ClientSecret"
+  vault_uri = "https://kv-arkhitekton.vault.azure.net/"
 }
 
 resource "azurerm_user_assigned_identity" "aksPodIdentity" {
@@ -87,7 +73,7 @@ resource "azurerm_user_assigned_identity" "aksPodIdentity" {
 resource "azurerm_role_assignment" "aksPodIdentityRoleAssignment" {
   scope                = "/subscriptions/${data.azurerm_client_config.current.subscription_id}/resourceGroups/${var.resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/${azurerm_user_assigned_identity.aksPodIdentity.name}"
   role_definition_name = "Managed Identity Operator"
-  principal_id         = "${azuread_service_principal.aks.id}"
+  principal_id         = "${data.azurerm_key_vault_secret.spClientId.value}"
 }
 
 # Create ACR
@@ -103,13 +89,13 @@ resource "azurerm_container_registry" "acr" {
 resource "azurerm_role_assignment" "aksACRRoleAssignmentRead" {
   scope                = "/subscriptions/${data.azurerm_client_config.current.subscription_id}/resourceGroups/${var.resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/${azurerm_container_registry.acr.name}"
   role_definition_name = "AcrPull"
-  principal_id         = "${azuread_service_principal.aks.id}"
+  principal_id         = "${data.azurerm_key_vault_secret.spClientId.value}"
 }
 
 resource "azurerm_role_assignment" "aksACRRoleAssignmentWrite" {
   scope                = "/subscriptions/${data.azurerm_client_config.current.subscription_id}/resourceGroups/${var.resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/${azurerm_container_registry.acr.name}"
   role_definition_name = "AcrPush"
-  principal_id         = "a14de615-33b0-4b0f-8045-477c2aa11460" #"${data.azurerm_client_config.current.service_principal_object_id == "" ? var.my_principal_object_id : data.azurerm_client_config.current.service_principal_object_id}"
+  principal_id         = "${data.azurerm_client_config.current.service_principal_object_id == "" ? var.my_principal_object_id : data.azurerm_client_config.current.service_principal_object_id}"
 }
 
 # Create managed Kubernetes cluster (AKS)
@@ -129,8 +115,8 @@ resource "azurerm_kubernetes_cluster" "aks" {
   }
 
   service_principal {
-    client_id     = "${azuread_application.aks.application_id}"
-    client_secret = "${azuread_service_principal_password.aks.value}"
+    client_id     = "${data.azurerm_key_vault_secret.spClientId.value}"
+    client_secret = "${data.azurerm_key_vault_secret.spClientSecret.value}"
   }
 
   addon_profile {
