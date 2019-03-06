@@ -81,7 +81,7 @@ resource "azurerm_container_registry" "acr" {
   location            = "${var.location}"
   resource_group_name = "${var.resourceGroupName}"
   admin_enabled       = false
-  sku                 = "Classic"
+  sku                 = "Standard"
   storage_account_id  = "${var.storageAccountId}"
 }
 
