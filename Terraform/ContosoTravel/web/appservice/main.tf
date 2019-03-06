@@ -48,6 +48,10 @@ variable "vnetId" {
   type = "string"
 }
 
+variable "servicePrincipalObjectId" {
+  type = "string"
+}
+
 variable "servicePrincipalClientId" {
   type = "string"
 }

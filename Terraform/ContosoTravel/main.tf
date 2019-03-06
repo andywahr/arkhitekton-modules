@@ -80,6 +80,10 @@ variable "my_principal_object_id" {
   default = ""
 }
 
+variable "servicePrincipalObjectId" {
+  type = "string"
+}
+
 variable "servicePrincipalClientId" {
   type = "string"
 }
@@ -282,6 +286,7 @@ module "webSite" {
   logAnalyticsName    = "${azurerm_log_analytics_workspace.logAnalytics.name}"
   vnetName            = "${azurerm_subnet.appSubnet.name}"
   vnetId              = "${azurerm_subnet.appSubnet.id}"
+  servicePrincipalObjectId = "${var.servicePrincipalObjectId}"
   servicePrincipalClientId = "${var.servicePrincipalClientId}"
   servicePrincipalSecretName = "${var.servicePrincipalSecretName}"
 }

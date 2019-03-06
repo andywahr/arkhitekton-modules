@@ -59,7 +59,7 @@ jobs:
     displayName: 'Terraform apply'
     inputs:
       TemplatePath: Terraform/ContosoTravel
-      Arguments: 'apply -var "location=$(location)" -var "namePrefix=$(namePrefix)" -var "cdn=$(cdn)" -var "trafficmanager=$(trafficmanager)" -var "apimgmt=$(apimgmt)" -var "firewall=$(firewall)" -var "appgateway=$(appgateway)" -var "mobile=$(mobile)" -var "adb2c=$(adb2c)" -var "streamanalytics=$(streamanalytics)" -var "cognitiveservices=$(cognitiveservices)" -var "sqldatawarehouse=$(sqldatawarehouse)" -var "hdinsight=$(hdinsight)" -var "search=$(search)" -var "bot=$(bot)" -var "servicePrincipalId=$(ServicePrincipal)" -var "resourceGroupName=$(ResourceGroupName)" -var "servicePrincipalClientId=$(servicePrincipalClientId)" -var "servicePrincipalSecretName=$(servicePrincipalSecretName)" -auto-approve'
+      Arguments: 'apply -var "location=$(location)" -var "namePrefix=$(namePrefix)" -var "cdn=$(cdn)" -var "trafficmanager=$(trafficmanager)" -var "apimgmt=$(apimgmt)" -var "firewall=$(firewall)" -var "appgateway=$(appgateway)" -var "mobile=$(mobile)" -var "adb2c=$(adb2c)" -var "streamanalytics=$(streamanalytics)" -var "cognitiveservices=$(cognitiveservices)" -var "sqldatawarehouse=$(sqldatawarehouse)" -var "hdinsight=$(hdinsight)" -var "search=$(search)" -var "bot=$(bot)" -var "servicePrincipalObjectId=$(servicePrincipalObjectId)" -var "resourceGroupName=$(ResourceGroupName)" -var "servicePrincipalClientId=$(servicePrincipalClientId)" -var "servicePrincipalSecretName=$(servicePrincipalSecretName)" -auto-approve'
       InstallTerraform: true
       UseAzureSub: true
       ConnectedServiceNameARM: $(ConnectedServiceName)

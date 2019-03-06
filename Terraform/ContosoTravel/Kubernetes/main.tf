@@ -48,6 +48,10 @@ variable "vnetId" {
   type = "string"
 }
 
+variable "servicePrincipalObjectId" {
+  type = "string"
+}
+
 variable "servicePrincipalClientId" {
   type = "string"
 }
@@ -77,7 +81,7 @@ resource "azurerm_user_assigned_identity" "aksPodIdentity" {
 resource "azurerm_role_assignment" "aksPodIdentityRoleAssignment" {
   scope                = "/subscriptions/${data.azurerm_client_config.current.subscription_id}/resourceGroups/${var.resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/${azurerm_user_assigned_identity.aksPodIdentity.name}"
   role_definition_name = "Managed Identity Operator"
-  principal_id         = "${var.servicePrincipalClientId}"
+  principal_id         = "${var.servicePrincipalObjectId}"
 }
 
 # Create ACR
@@ -92,7 +96,7 @@ resource "azurerm_container_registry" "acr" {
 resource "azurerm_role_assignment" "aksACRRoleAssignmentRead" {
   scope                = "/subscriptions/${data.azurerm_client_config.current.subscription_id}/resourceGroups/${var.resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/${azurerm_container_registry.acr.name}"
   role_definition_name = "AcrPull"
-  principal_id         = "${var.servicePrincipalClientId}"
+  principal_id         = "${var.servicePrincipalObjectId}"
 }
 
 resource "azurerm_role_assignment" "aksACRRoleAssignmentWrite" {

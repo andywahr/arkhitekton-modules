@@ -48,6 +48,10 @@ variable "vnetId" {
   type = "string"
 }
 
+variable "servicePrincipalObjectId" {
+  type = "string"
+}
+
 variable "servicePrincipalClientId" {
   type = "string"
 }
@@ -71,6 +75,7 @@ module "aksInstall" {
   vnetName = "${var.vnetName}"
   vnetId = "${var.vnetId}"
   servicePrincipalClientId = "${var.servicePrincipalClientId}"
+  servicePrincipalObjectId = "${var.servicePrincipalObjectId}"
   servicePrincipalSecretName = "${var.servicePrincipalSecretName}"
 }
 
