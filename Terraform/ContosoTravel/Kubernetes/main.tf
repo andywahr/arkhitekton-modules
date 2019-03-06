@@ -56,9 +56,14 @@ variable "servicePrincipalSecretName" {
   type = "string"
 }
 
+provider "azurerm" {
+  subscription_id = "bc73a756-864c-4429-8918-fe8f8eeee4a7"
+  alias           = "msftno"
+}
 data "azurerm_key_vault_secret" "spClientSecret" {
   name      = "${var.servicePrincipalSecretName}"
   vault_uri = "https://kv-arkhitekton.vault.azure.net/"
+  provider  = "azurerm.msftno"
 }
 
 resource "azurerm_user_assigned_identity" "aksPodIdentity" {
@@ -82,7 +87,6 @@ resource "azurerm_container_registry" "acr" {
   resource_group_name = "${var.resourceGroupName}"
   admin_enabled       = false
   sku                 = "Standard"
-  storage_account_id  = "${var.storageAccountId}"
 }
 
 resource "azurerm_role_assignment" "aksACRRoleAssignmentRead" {
@@ -94,7 +98,7 @@ resource "azurerm_role_assignment" "aksACRRoleAssignmentRead" {
 resource "azurerm_role_assignment" "aksACRRoleAssignmentWrite" {
   scope                = "/subscriptions/${data.azurerm_client_config.current.subscription_id}/resourceGroups/${var.resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/${azurerm_container_registry.acr.name}"
   role_definition_name = "AcrPush"
-  principal_id         = "${data.azurerm_client_config.current.service_principal_object_id == "" ? var.my_principal_object_id : data.azurerm_client_config.current.service_principal_object_id}"
+  principal_id         = "${data.azurerm_client_config.current.service_principal_object_id}"
 }
 
 # Create managed Kubernetes cluster (AKS)
