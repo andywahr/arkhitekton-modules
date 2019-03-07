@@ -25,11 +25,8 @@ variables:
 jobs:
 - job: Deploy_Infrastructure_via_Terraform
   pool:
-    name: Hosted VS2017
-    demands: 
-    - msbuild
-    - visualstudio
-    - vstest
+    name: Hosted Ubuntu 1604
+
   steps:
   - task: qetza.replacetokens.replacetokens-task.replacetokens@3
     displayName: 'Replace tokens in override.tf'
@@ -42,7 +39,6 @@ jobs:
     inputs:
       TemplatePath: Terraform/ContosoTravel
       Arguments: init
-      InstallTerraform: true
       UseAzureSub: true
       ConnectedServiceNameARM: $(ConnectedServiceName)
   
@@ -51,7 +47,6 @@ jobs:
     inputs:
       TemplatePath: Terraform/ContosoTravel
       Arguments: 'init -var "location=$(location)" -var "namePrefix=$(namePrefix)"'
-      InstallTerraform: true
       UseAzureSub: true
       ConnectedServiceNameARM: $(ConnectedServiceName)
   
@@ -60,6 +55,5 @@ jobs:
     inputs:
       TemplatePath: Terraform/ContosoTravel
       Arguments: 'apply -var "location=$(location)" -var "namePrefix=$(namePrefix)" -var "cdn=$(cdn)" -var "trafficmanager=$(trafficmanager)" -var "apimgmt=$(apimgmt)" -var "firewall=$(firewall)" -var "appgateway=$(appgateway)" -var "mobile=$(mobile)" -var "adb2c=$(adb2c)" -var "streamanalytics=$(streamanalytics)" -var "cognitiveservices=$(cognitiveservices)" -var "sqldatawarehouse=$(sqldatawarehouse)" -var "hdinsight=$(hdinsight)" -var "search=$(search)" -var "bot=$(bot)" -var "servicePrincipalObjectId=$(servicePrincipalObjectId)" -var "resourceGroupName=$(ResourceGroupName)" -var "servicePrincipalClientId=$(servicePrincipalClientId)" -var "servicePrincipalSecretName=$(servicePrincipalSecretName)" -auto-approve'
-      InstallTerraform: true
       UseAzureSub: true
       ConnectedServiceNameARM: $(ConnectedServiceName)
