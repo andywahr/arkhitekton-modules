@@ -60,6 +60,9 @@ variable "servicePrincipalSecretName" {
   type = "string"
 }
 
+variable "keyVaultPermId" {
+  type = "string"
+}
 resource "azurerm_app_service_plan" "webSiteAppServicePlan" {
   name                = "asp-contosotravel-${var.namePrefix}-web"
   location            = "${var.location}"

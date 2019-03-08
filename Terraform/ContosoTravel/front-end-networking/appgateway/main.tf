@@ -37,6 +37,7 @@ variable "logAnalyticsId" {
 variable "logAnalyticsName" {
   type = "string"
 }
+
 resource "azurerm_public_ip" "appGatewayPIP" {
   name                = "${var.namePrefix}-wafappgateway-pip"
   location            = "${var.location}"

@@ -76,7 +76,7 @@ variable "resourceGroupName" {
 }
 
 variable "my_principal_object_id" {
-  type = "string"
+  type    = "string"
   default = ""
 }
 
@@ -91,7 +91,6 @@ variable "servicePrincipalClientId" {
 variable "servicePrincipalSecretName" {
   type = "string"
 }
-
 
 resource "azurerm_resource_group" "resourceGroup" {
   name     = "${var.resourceGroupName}"
@@ -272,24 +271,26 @@ module "service" {
   logAnalyticsId          = "${azurerm_log_analytics_workspace.logAnalytics.id}"
   logAnalyticsName        = "${azurerm_log_analytics_workspace.logAnalytics.name}"
   vnetName                = "${azurerm_subnet.appSubnet.name}"
+  keyVaultPermId          = "${azurerm_key_vault_access_policy.deployKeyVaultPolicy.id}"
 }
 
 module "webSite" {
-  namePrefix          = "${var.namePrefix}"
-  location            = "${var.location}"
-  resourceGroupName   = "${azurerm_resource_group.resourceGroup.name}"
-  keyVaultUrl         = "${azurerm_key_vault.keyVault.vault_uri}"
-  keyVaultAccountName = "${azurerm_key_vault.keyVault.name}"
-  keyVaultId          = "${azurerm_key_vault.keyVault.id}"
-  appInsightsKey      = "${azurerm_application_insights.appInsights.instrumentation_key}"
-  storageAccountId    = "${azurerm_storage_account.storageAccount.id}"
-  logAnalyticsId      = "${azurerm_log_analytics_workspace.logAnalytics.id}"
-  logAnalyticsName    = "${azurerm_log_analytics_workspace.logAnalytics.name}"
-  vnetName            = "${azurerm_subnet.appSubnet.name}"
-  vnetId              = "${azurerm_subnet.appSubnet.id}"
-  servicePrincipalObjectId = "${var.servicePrincipalObjectId}"
-  servicePrincipalClientId = "${var.servicePrincipalClientId}"
+  namePrefix                 = "${var.namePrefix}"
+  location                   = "${var.location}"
+  resourceGroupName          = "${azurerm_resource_group.resourceGroup.name}"
+  keyVaultUrl                = "${azurerm_key_vault.keyVault.vault_uri}"
+  keyVaultAccountName        = "${azurerm_key_vault.keyVault.name}"
+  keyVaultId                 = "${azurerm_key_vault.keyVault.id}"
+  appInsightsKey             = "${azurerm_application_insights.appInsights.instrumentation_key}"
+  storageAccountId           = "${azurerm_storage_account.storageAccount.id}"
+  logAnalyticsId             = "${azurerm_log_analytics_workspace.logAnalytics.id}"
+  logAnalyticsName           = "${azurerm_log_analytics_workspace.logAnalytics.name}"
+  vnetName                   = "${azurerm_subnet.appSubnet.name}"
+  vnetId                     = "${azurerm_subnet.appSubnet.id}"
+  servicePrincipalObjectId   = "${var.servicePrincipalObjectId}"
+  servicePrincipalClientId   = "${var.servicePrincipalClientId}"
   servicePrincipalSecretName = "${var.servicePrincipalSecretName}"
+  keyVaultPermId             = "${azurerm_key_vault_access_policy.deployKeyVaultPolicy.id}"
 }
 
 module "data" {

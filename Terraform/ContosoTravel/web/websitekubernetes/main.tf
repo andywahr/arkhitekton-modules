@@ -60,6 +60,10 @@ variable "servicePrincipalSecretName" {
   type = "string"
 }
 
+variable "keyVaultPermId" {
+  type = "string"
+}
+
 module "aksInstall" {
   source = "../../Kubernetes"
   namePrefix = "${var.namePrefix}"
