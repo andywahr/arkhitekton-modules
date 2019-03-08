@@ -37,6 +37,7 @@ jobs:
   - task: petergroenewegen.PeterGroenewegen-Xpirit-Vsts-Release-Terraform.Xpirit-Vsts-Release-Terraform.Terraform@2
     displayName: 'Terraform init'
     inputs:
+      InstallTerraform: true
       TemplatePath: Terraform/ContosoTravel
       Arguments: init
       UseAzureSub: true
@@ -45,6 +46,7 @@ jobs:
   - task: petergroenewegen.PeterGroenewegen-Xpirit-Vsts-Release-Terraform.Xpirit-Vsts-Release-Terraform.Terraform@2
     displayName: 'Terraform plan'
     inputs:
+      InstallTerraform: true
       TemplatePath: Terraform/ContosoTravel
       Arguments: 'init -var "location=$(location)" -var "namePrefix=$(namePrefix)"'
       UseAzureSub: true
@@ -53,6 +55,7 @@ jobs:
   - task: petergroenewegen.PeterGroenewegen-Xpirit-Vsts-Release-Terraform.Xpirit-Vsts-Release-Terraform.Terraform@2
     displayName: 'Terraform apply'
     inputs:
+      InstallTerraform: true
       TemplatePath: Terraform/ContosoTravel
       Arguments: 'apply -var "location=$(location)" -var "namePrefix=$(namePrefix)" -var "cdn=$(cdn)" -var "trafficmanager=$(trafficmanager)" -var "apimgmt=$(apimgmt)" -var "firewall=$(firewall)" -var "appgateway=$(appgateway)" -var "mobile=$(mobile)" -var "adb2c=$(adb2c)" -var "streamanalytics=$(streamanalytics)" -var "cognitiveservices=$(cognitiveservices)" -var "sqldatawarehouse=$(sqldatawarehouse)" -var "hdinsight=$(hdinsight)" -var "search=$(search)" -var "bot=$(bot)" -var "servicePrincipalObjectId=$(servicePrincipalObjectId)" -var "resourceGroupName=$(ResourceGroupName)" -var "servicePrincipalClientId=$(servicePrincipalClientId)" -var "servicePrincipalSecretName=$(servicePrincipalSecretName)" -auto-approve'
       UseAzureSub: true
