@@ -209,6 +209,7 @@ resource "azurerm_key_vault_access_policy" "deployKeyVaultPolicy" {
 
   secret_permissions = [
     "set",
+    "list",
     "get",
   ]
 }
