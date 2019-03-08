@@ -357,7 +357,6 @@ module "appGateway" {
 
 resource "azurerm_template_deployment" "aciDataLoader" {
   name                = "aciDataLoader"
-  location            = "${var.location}"
   resource_group_name = "${azurerm_resource_group.resourceGroup.name}"
 
   template_body = <<DEPLOY
@@ -437,7 +436,7 @@ DEPLOY
 }
 
 resource "azurerm_key_vault_access_policy" "aciKeyVaultPolicy" {
-  key_vault_id        = "${var.keyVaultId}"
+  key_vault_id        = "${azurerm_key_vault.keyVault.id}"
 
   tenant_id = "${data.azurerm_client_config.current.tenant_id}"
   object_id = "${lookup(azurerm_template_deployment.aciDataLoader.outputs, "aciMSIId")}"
