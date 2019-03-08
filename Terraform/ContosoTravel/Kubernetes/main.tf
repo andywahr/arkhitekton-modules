@@ -131,10 +131,6 @@ resource "azurerm_kubernetes_cluster" "aks" {
       enabled                    = "true"
       log_analytics_workspace_id = "${var.logAnalyticsId}"
     }
-
-    http_application_routing {
-      enabled = "true"
-    }
   }
 
   network_profile {
