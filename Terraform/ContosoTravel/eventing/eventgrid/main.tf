@@ -22,9 +22,6 @@ variable "logAnalyticsId" {
   type = "string"
 }
 
-variable "keyVaultPermId" {
-  type = "string"
-}
 
 
 resource "azurerm_eventgrid_topic" "eventGrid" {

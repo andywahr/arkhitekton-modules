@@ -29,9 +29,7 @@ variable "keyVaultId" {
   type = "string"
 }
 
-variable "keyVaultPermId" {
-  type = "string"
-}
+
 resource "azurerm_cosmosdb_account" "cosmosdb" {
   name                = "contosotravel-${var.namePrefix}"
   location            = "${var.location}"

@@ -52,9 +52,6 @@ variable "vnetName" {
   type = "string"
 }
 
-variable "keyVaultPermId" {
-  type = "string"
-}
 resource "azurerm_app_service_plan" "serviceAppServicePlan" {
   name                = "asp-contosotravel-${var.namePrefix}-service"
   location            = "${var.location}"

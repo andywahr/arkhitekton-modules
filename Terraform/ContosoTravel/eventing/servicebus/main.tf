@@ -23,9 +23,6 @@ variable "logAnalyticsId" {
   type = "string"
 }
 
-variable "keyVaultPermId" {
-  type = "string"
-}
 resource "azurerm_servicebus_namespace" "serviceBus" {
   name                = "sb-${var.namePrefix}-contosotravel"
   location            = "${var.location}"

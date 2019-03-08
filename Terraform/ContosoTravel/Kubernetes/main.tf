@@ -64,10 +64,17 @@ provider "azurerm" {
   subscription_id = "bc73a756-864c-4429-8918-fe8f8eeee4a7"
   alias           = "msftno"
 }
+
+data "azurerm_key_vault" "arkKeyVault" {
+  name                = "kv-arkhitekton"
+  resource_group_name = "rgArchitektron"
+  provider            = "azurerm.msftno"
+}
+
 data "azurerm_key_vault_secret" "spClientSecret" {
-  name      = "${var.servicePrincipalSecretName}"
-  vault_uri = "https://kv-arkhitekton.vault.azure.net/"
-  provider  = "azurerm.msftno"
+  name         = "${var.servicePrincipalSecretName}"
+  key_vault_id = "${data.azurerm_key_vault.arkKeyVault.id}"
+  provider     = "azurerm.msftno"
 }
 
 resource "azurerm_user_assigned_identity" "aksPodIdentity" {

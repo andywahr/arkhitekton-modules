@@ -174,6 +174,17 @@ resource "azurerm_key_vault" "keyVault" {
   sku {
     name = "standard"
   }
+
+  access_policy {
+    tenant_id = "${data.azurerm_client_config.current.tenant_id}"
+    object_id = "${data.azurerm_client_config.current.service_principal_object_id}"
+	
+    secret_permissions = [
+      "get",
+	    "list",
+	    "set",
+    ]
+  }
 }
 
 resource "azurerm_monitor_diagnostic_setting" "keyVaultDiag" {
@@ -200,38 +211,22 @@ resource "azurerm_monitor_diagnostic_setting" "keyVaultDiag" {
   }
 }
 
-resource "azurerm_key_vault_access_policy" "deployKeyVaultPolicy" {
-  key_vault_id = "${azurerm_key_vault.keyVault.id}"
-
-  tenant_id = "${data.azurerm_client_config.current.tenant_id}"
-  object_id = "${data.azurerm_client_config.current.service_principal_object_id == "" ? var.my_principal_object_id : data.azurerm_client_config.current.service_principal_object_id}"
-
-  secret_permissions = [
-    "set",
-    "list",
-    "get",
-  ]
-}
-
 resource "azurerm_key_vault_secret" "subscriptionId" {
   name         = "ContosoTravel--SubscriptionId"
   value        = "${data.azurerm_client_config.current.subscription_id}"
   key_vault_id = "${azurerm_key_vault.keyVault.id}"
-  depends_on   = ["azurerm_key_vault_access_policy.deployKeyVaultPolicy"]
 }
 
 resource "azurerm_key_vault_secret" "tenantId" {
   name         = "ContosoTravel--SubscriptionId"
   value        = "${data.azurerm_client_config.current.tenant_id}"
   key_vault_id = "${azurerm_key_vault.keyVault.id}"
-  depends_on   = ["azurerm_key_vault_access_policy.deployKeyVaultPolicy"]
 }
 
 resource "azurerm_key_vault_secret" "resourceGroupName" {
   name         = "ContosoTravel--ResourceGroupName"
   value        = "${azurerm_resource_group.resourceGroup.name}"
   key_vault_id = "${azurerm_key_vault.keyVault.id}"
-  depends_on   = ["azurerm_key_vault_access_policy.deployKeyVaultPolicy"]
 }
 
 resource "azurerm_log_analytics_solution" "keyVaultAnalytics" {
@@ -254,7 +249,6 @@ module "eventing" {
   keyVaultId        = "${azurerm_key_vault.keyVault.id}"
   storageAccountId  = "${azurerm_storage_account.storageAccount.id}"
   logAnalyticsId    = "${azurerm_log_analytics_workspace.logAnalytics.id}"
-  keyVaultPermId    = "${azurerm_key_vault_access_policy.deployKeyVaultPolicy.id}"
 }
 
 module "service" {
@@ -271,7 +265,6 @@ module "service" {
   logAnalyticsId          = "${azurerm_log_analytics_workspace.logAnalytics.id}"
   logAnalyticsName        = "${azurerm_log_analytics_workspace.logAnalytics.name}"
   vnetName                = "${azurerm_subnet.appSubnet.name}"
-  keyVaultPermId          = "${azurerm_key_vault_access_policy.deployKeyVaultPolicy.id}"
 }
 
 module "webSite" {
@@ -290,7 +283,6 @@ module "webSite" {
   servicePrincipalObjectId   = "${var.servicePrincipalObjectId}"
   servicePrincipalClientId   = "${var.servicePrincipalClientId}"
   servicePrincipalSecretName = "${var.servicePrincipalSecretName}"
-  keyVaultPermId             = "${azurerm_key_vault_access_policy.deployKeyVaultPolicy.id}"
 }
 
 module "data" {
@@ -302,7 +294,6 @@ module "data" {
   logAnalyticsId    = "${azurerm_log_analytics_workspace.logAnalytics.id}"
   logAnalyticsName  = "${azurerm_log_analytics_workspace.logAnalytics.name}"
   keyVaultId        = "${azurerm_key_vault.keyVault.id}"
-  keyVaultPermId    = "${azurerm_key_vault_access_policy.deployKeyVaultPolicy.id}"
 }
 
 module "appGateway" {

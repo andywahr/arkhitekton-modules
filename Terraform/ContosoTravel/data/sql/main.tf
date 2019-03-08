@@ -29,10 +29,6 @@ variable "keyVaultId" {
   type = "string"
 }
 
-variable "keyVaultPermId" {
-  type = "string"
-}
-
 resource "random_string" "dataAdministratorLogin" {
   length = 16
   special = false
