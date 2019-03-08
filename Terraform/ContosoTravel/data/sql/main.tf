@@ -69,6 +69,21 @@ resource "azurerm_sql_database" "sqlServerDatabase" {
   }
 }
 
+resource "azurerm_sql_virtual_network_rule" "sqlAppVnetrule" {
+  name                = "sql-vnet-rule"
+  resource_group_name = "${var.resourceGroupName}"
+  server_name         = "${azurerm_sql_server.sqlServer.name}"
+  subnet_id           = "${var.vnetId}"
+}
+
+resource "azurerm_sql_firewall_rule" "sqlAllAzureServices" {
+  name                = "sqlAllAzureServicesRule"
+  resource_group_name = "${var.resourceGroupName}"
+  server_name         = "${azurerm_sql_server.sqlServer.name}"
+  start_ip_address    = "0.0.0.0"
+  end_ip_address      = "0.0.0.0"
+}
+
 resource "azurerm_monitor_diagnostic_setting" "dataDiag" {
   name               = "${var.namePrefix}-dataDiag"
   target_resource_id = "${azurerm_sql_server.sqlServer.id}"

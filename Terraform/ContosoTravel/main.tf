@@ -310,47 +310,140 @@ module "appGateway" {
   logAnalyticsName  = "${azurerm_log_analytics_workspace.logAnalytics.name}"
 }
 
-resource "azurerm_storage_share" "aciLogShare" {
-  name = "dataloader-share"
+#resource "azurerm_storage_share" "aciLogShare" {
+#  name = "dataloader-share"
+#
+#  resource_group_name  = "${azurerm_resource_group.resourceGroup.name}"
+#  storage_account_name = "${azurerm_storage_account.storageAccount.name}"
+#
+#  quota = 50
+#}
+#
+#resource "azurerm_container_group" "dataLoaders" {
+#  name                = "aci-dataloader-${lower(var.namePrefix)}"
+#  location            = "${var.location}"
+#  resource_group_name = "${azurerm_resource_group.resourceGroup.name}"
+#  ip_address_type     = "public"
+#  dns_name_label      = "contosoTravel-dataLoader-${var.namePrefix}"
+#  os_type             = "Linux"
+#  restart_policy      = "OnFailure"
+#
+#  container {
+#    name   = "dataloader-aci-logs"
+#    image  = "andywahr/arkhitekton-dataloader"
+#    cpu    = "0.5"
+#    memory = "1.5"
+#
+#    ports = {
+#      port     = 80
+#      protocol = "TCP"
+#    }
+#
+#    environment_variables {
+#      "NODE_ENV" = "${azurerm_key_vault.keyVault.vault_uri}"
+#    }
+#
+#    volume {
+#      name       = "logs"
+#      mount_path = "/aci/logs"
+#      read_only  = false
+#      share_name = "${azurerm_storage_share.aciLogShare.name}"
+#
+#      storage_account_name = "${azurerm_storage_account.storageAccount.name}"
+#      storage_account_key  = "${azurerm_storage_account.storageAccount.primary_access_key}"
+#    }
+#  }
+#}
 
-  resource_group_name  = "${azurerm_resource_group.resourceGroup.name}"
-  storage_account_name = "${azurerm_storage_account.storageAccount.name}"
-
-  quota = 50
-}
-
-resource "azurerm_container_group" "dataLoaders" {
-  name                = "aci-dataloader-${lower(var.namePrefix)}"
+resource "azurerm_template_deployment" "aciDataLoader" {
+  name                = "aciDataLoader"
   location            = "${var.location}"
   resource_group_name = "${azurerm_resource_group.resourceGroup.name}"
-  ip_address_type     = "public"
-  dns_name_label      = "contosoTravel-dataLoader-${var.namePrefix}"
-  os_type             = "Linux"
-  restart_policy      = "OnFailure"
 
-  container {
-    name   = "dataloader-aci-logs"
-    image  = "andywahr/arkhitekton-dataloader"
-    cpu    = "0.5"
-    memory = "1.5"
-
-    ports = {
-      port     = 80
-      protocol = "TCP"
+  template_body = <<DEPLOY
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "namePrefix": {
+            "maxLength": 16,
+            "type": "String"
+        },
+        "keyVaultUrl": {
+            "type": "String"
+        }
+    },
+    "variables": {
+        "siteName": "[concat(parameters('namePrefix'), '-appInsight-ContosoTravel')]",
+        "location": "[resourceGroup().location]",
+        "aciName": "[concat('aci-contosotravel-', parameters('namePrefix'), '-dataload')]",
+        "aciId": "[concat('Microsoft.ContainerInstance/containerGroups/', variables('aciName'))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.ContainerInstance/containerGroups",
+            "name": "[variables('aciName')]",
+            "apiVersion": "2018-10-01",
+            "location": "[variables('location')]",
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "tags": {},
+            "properties": {
+                "containers": [
+                    {
+                        "name": "dataloader",
+                        "properties": {
+                            "image": "andywahr/arkhitekton-dataloader",
+                            "ports": [],
+                            "environmentVariables": [
+                                {
+                                    "name": "KeyVaultUrl",
+                                    "secureValue": null,
+                                    "value": "[parameters('keyVaultUrl')]"
+                                }
+                            ],
+                            "resources": {
+                                "requests": {
+                                    "memoryInGB": 1.5,
+                                    "cpu": 1
+                                }
+                            }
+                        }
+                    }
+                ],
+                "restartPolicy": "OnFailure",
+                "osType": "Linux"
+            },
+            "dependsOn": []
+        }
+    ],
+    "outputs": {
+        "aciMSIId": {
+            "type": "String",
+            "value": "[reference(variables('aciId'), '2018-10-01', 'Full').identity.principalId]"
+        }
     }
+}
+DEPLOY
 
-    environment_variables {
-      "NODE_ENV" = "${azurerm_key_vault.keyVault.vault_uri}"
-    }
-
-    volume {
-      name       = "logs"
-      mount_path = "/aci/logs"
-      read_only  = false
-      share_name = "${azurerm_storage_share.aciLogShare.name}"
-
-      storage_account_name = "${azurerm_storage_account.storageAccount.name}"
-      storage_account_key  = "${azurerm_storage_account.storageAccount.primary_access_key}"
-    }
+  # these key-value pairs are passed into the ARM Template's `parameters` block
+  parameters = {
+    "namePrefix" = "${var.namePrefix}"
+    "keyVaultUrl" = "${azurerm_key_vault.keyVault.vault_uri}"
   }
+
+  deployment_mode = "Incremental"
+}
+
+resource "azurerm_key_vault_access_policy" "aciKeyVaultPolicy" {
+  key_vault_id        = "${var.keyVaultId}"
+
+  tenant_id = "${data.azurerm_client_config.current.tenant_id}"
+  object_id = "${lookup(azurerm_template_deployment.aciDataLoader.outputs, "aciMSIId")}"
+
+  secret_permissions = [
+    "get",
+    "list",
+  ]
 }

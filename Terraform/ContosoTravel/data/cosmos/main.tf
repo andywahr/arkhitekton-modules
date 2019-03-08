@@ -39,15 +39,14 @@ resource "azurerm_cosmosdb_account" "cosmosdb" {
 
   enable_automatic_failover = false
   is_virtual_network_filter_enabled = true
-
+  ip_range_filter =  "0.0.0.0/24,1.1.1.1/24,104.42.195.92,40.76.54.131,52.176.6.30,52.169.50.45,52.187.184.26"
   consistency_policy {
     consistency_level = "Strong"
   }
 
-  # need to wait until you can add the "Azure Services can access" flag is added
-  #virtual_network_rule {
-  #  id = "${var.vnetId}"
-  #}
+  virtual_network_rule {
+    id = "${var.vnetId}"
+  }
 
   geo_location {
         location          = "${var.location}"
