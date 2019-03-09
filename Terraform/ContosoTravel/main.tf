@@ -140,6 +140,21 @@ resource "azurerm_subnet" "appSubnet" {
   service_endpoints    = ["Microsoft.AzureActiveDirectory", "Microsoft.AzureCosmosDB", "Microsoft.EventHub", "Microsoft.KeyVault", "Microsoft.ServiceBus", "Microsoft.Sql", "Microsoft.Storage"]
 }
 
+resource "azurerm_subnet" "aciSubnet" {
+  name                 = "aciSubnet"
+  resource_group_name  = "${azurerm_resource_group.resourceGroup.name}"
+  virtual_network_name = "${azurerm_virtual_network.virtualNetwork.name}"
+  address_prefix       = "10.2.0.0/16"
+  service_endpoints    = ["Microsoft.AzureActiveDirectory", "Microsoft.AzureCosmosDB", "Microsoft.EventHub", "Microsoft.KeyVault", "Microsoft.ServiceBus", "Microsoft.Sql", "Microsoft.Storage"]
+  delegation {
+    name = "acctestdelegation"
+    service_delegation {
+      name    = "Microsoft.ContainerInstance/containerGroups"
+      actions = ["Microsoft.Network/virtualNetworks/subnets/action"]
+    }
+  }
+}
+
 resource "azurerm_storage_account" "storageAccount" {
   name                      = "${var.namePrefix}scontrav"
   location                  = "${azurerm_resource_group.resourceGroup.location}"
@@ -290,6 +305,7 @@ module "data" {
   location          = "${var.location}"
   resourceGroupName = "${azurerm_resource_group.resourceGroup.name}"
   vnetId            = "${azurerm_subnet.appSubnet.id}"
+  aciVnetId         = "${azurerm_subnet.aciSubnet.id}"
   storageAccountId  = "${azurerm_storage_account.storageAccount.id}"
   logAnalyticsId    = "${azurerm_log_analytics_workspace.logAnalytics.id}"
   logAnalyticsName  = "${azurerm_log_analytics_workspace.logAnalytics.name}"
@@ -376,9 +392,36 @@ resource "azurerm_template_deployment" "aciDataLoader" {
         "siteName": "[concat(parameters('namePrefix'), '-appInsight-ContosoTravel')]",
         "location": "[resourceGroup().location]",
         "aciName": "[concat('aci-contosotravel-', parameters('namePrefix'), '-dataload')]",
-        "aciId": "[concat('Microsoft.ContainerInstance/containerGroups/', variables('aciName'))]"
+        "aciId": "[concat('Microsoft.ContainerInstance/containerGroups/', variables('aciName'))]",
+        "networkProfileName": "[concat('netProfile-contosotravel-', parameters('namePrefix'), '-dataload')]",
+        "vnetName": "[concat(parameters('namePrefix'), 'vnet')]"
     },
     "resources": [
+       {
+          "name": "[variables('networkProfileName')]",
+          "type": "Microsoft.Network/networkProfiles",
+          "apiVersion": "2018-07-01",
+          "location": "[variables('location')]",
+          "properties": {
+            "containerNetworkInterfaceConfigurations": [
+              {
+                "name": "aciEth0",
+                "properties": {
+                  "ipConfigurations": [
+                    {
+                      "name": "aciEth0Config",
+                      "properties": {
+                        "subnet": {
+                          "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), 'aciSubnet')]"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
         {
             "type": "Microsoft.ContainerInstance/containerGroups",
             "name": "[variables('aciName')]",
@@ -412,10 +455,15 @@ resource "azurerm_template_deployment" "aciDataLoader" {
                     }
                 ],
                 "restartPolicy": "OnFailure",
-                "osType": "Linux"
+                "osType": "Linux",
+                "networkProfile": {
+                  "Id": "[resourceId('Microsoft.Network/networkProfiles', variables('networkProfileName'))]"
+                }
             },
-            "dependsOn": []
-        }
+        "dependsOn": [
+          "[resourceId('Microsoft.Network/networkProfiles', variables('networkProfileName'))]"
+        ]
+      }
     ],
     "outputs": {
         "aciMSIId": {

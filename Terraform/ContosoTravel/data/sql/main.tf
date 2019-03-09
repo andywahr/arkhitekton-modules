@@ -10,6 +10,10 @@ variable "resourceGroupName" {
   type = "string"
 }
 
+variable "aciVnetId" {
+  type = "string"
+}
+
 variable "vnetId" {
   type = "string"
 }
@@ -70,12 +74,18 @@ resource "azurerm_sql_database" "sqlServerDatabase" {
 }
 
 resource "azurerm_sql_virtual_network_rule" "sqlAppVnetrule" {
-  name                = "sql-vnet-rule"
+  name                = "sql-vnet-rule-app"
   resource_group_name = "${var.resourceGroupName}"
   server_name         = "${azurerm_sql_server.sqlServer.name}"
   subnet_id           = "${var.vnetId}"
 }
 
+resource "azurerm_sql_virtual_network_rule" "sqlAciVnetrule" {
+  name                = "sql-vnet-rule-aci"
+  resource_group_name = "${var.resourceGroupName}"
+  server_name         = "${azurerm_sql_server.sqlServer.name}"
+  subnet_id           = "${var.aciVnetId}"
+}
 resource "azurerm_sql_firewall_rule" "sqlAllAzureServices" {
   name                = "sqlAllAzureServicesRule"
   resource_group_name = "${var.resourceGroupName}"
