@@ -392,36 +392,9 @@ resource "azurerm_template_deployment" "aciDataLoader" {
         "siteName": "[concat(parameters('namePrefix'), '-appInsight-ContosoTravel')]",
         "location": "[resourceGroup().location]",
         "aciName": "[concat('aci-contosotravel-', parameters('namePrefix'), '-dataload')]",
-        "aciId": "[concat('Microsoft.ContainerInstance/containerGroups/', variables('aciName'))]",
-        "networkProfileName": "[concat('netProfile-contosotravel-', parameters('namePrefix'), '-dataload')]",
-        "vnetName": "[concat(parameters('namePrefix'), 'vnet')]"
+        "aciId": "[concat('Microsoft.ContainerInstance/containerGroups/', variables('aciName'))]"
     },
     "resources": [
-       {
-          "name": "[variables('networkProfileName')]",
-          "type": "Microsoft.Network/networkProfiles",
-          "apiVersion": "2018-07-01",
-          "location": "[variables('location')]",
-          "properties": {
-            "containerNetworkInterfaceConfigurations": [
-              {
-                "name": "aciEth0",
-                "properties": {
-                  "ipConfigurations": [
-                    {
-                      "name": "aciEth0Config",
-                      "properties": {
-                        "subnet": {
-                          "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), 'aciSubnet')]"
-                        }
-                      }
-                    }
-                  ]
-                }
-              }
-            ]
-          }
-        },
         {
             "type": "Microsoft.ContainerInstance/containerGroups",
             "name": "[variables('aciName')]",
@@ -455,10 +428,7 @@ resource "azurerm_template_deployment" "aciDataLoader" {
                     }
                 ],
                 "restartPolicy": "OnFailure",
-                "osType": "Linux",
-                "networkProfile": {
-                  "Id": "[resourceId('Microsoft.Network/networkProfiles', variables('networkProfileName'))]"
-                }
+                "osType": "Linux"
             },
         "dependsOn": [
           "[resourceId('Microsoft.Network/networkProfiles', variables('networkProfileName'))]"
@@ -473,6 +443,107 @@ resource "azurerm_template_deployment" "aciDataLoader" {
     }
 }
 DEPLOY
+
+# After they fix what's broken with VNet integration and MSI
+#
+#  template_body = <<DEPLOY
+#{
+#    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+#    "contentVersion": "1.0.0.0",
+#    "parameters": {
+#        "namePrefix": {
+#            "maxLength": 16,
+#            "type": "String"
+#        },
+#        "keyVaultUrl": {
+#            "type": "String"
+#        }
+#    },
+#    "variables": {
+#        "siteName": "[concat(parameters('namePrefix'), '-appInsight-ContosoTravel')]",
+#        "location": "[resourceGroup().location]",
+#        "aciName": "[concat('aci-contosotravel-', parameters('namePrefix'), '-dataload')]",
+#        "aciId": "[concat('Microsoft.ContainerInstance/containerGroups/', variables('aciName'))]",
+#        "networkProfileName": "[concat('netProfile-contosotravel-', parameters('namePrefix'), '-dataload')]",
+#        "vnetName": "[concat(parameters('namePrefix'), 'vnet')]"
+#    },
+#    "resources": [
+#       {
+#          "name": "[variables('networkProfileName')]",
+#          "type": "Microsoft.Network/networkProfiles",
+#          "apiVersion": "2018-07-01",
+#          "location": "[variables('location')]",
+#          "properties": {
+#            "containerNetworkInterfaceConfigurations": [
+#              {
+#                "name": "aciEth0",
+#                "properties": {
+#                  "ipConfigurations": [
+#                    {
+#                      "name": "aciEth0Config",
+#                      "properties": {
+#                        "subnet": {
+#                          "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), 'aciSubnet')]"
+#                        }
+#                      }
+#                    }
+#                  ]
+#                }
+#              }
+#            ]
+#          }
+#        },
+#        {
+#            "type": "Microsoft.ContainerInstance/containerGroups",
+#            "name": "[variables('aciName')]",
+#            "apiVersion": "2018-10-01",
+#            "location": "[variables('location')]",
+#            "identity": {
+#                "type": "SystemAssigned"
+#            },
+#            "tags": {},
+#            "properties": {
+#                "containers": [
+#                    {
+#                        "name": "dataloader",
+#                        "properties": {
+#                            "image": "andywahr/arkhitekton-dataloader",
+#                            "ports": [],
+#                            "environmentVariables": [
+#                                {
+#                                    "name": "KeyVaultUrl",
+#                                    "secureValue": null,
+#                                    "value": "[parameters('keyVaultUrl')]"
+#                                }
+#                            ],
+#                            "resources": {
+#                                "requests": {
+#                                    "memoryInGB": 1.5,
+#                                    "cpu": 1
+#                                }
+#                            }
+#                        }
+#                    }
+#                ],
+#                "restartPolicy": "OnFailure",
+#                "osType": "Linux",
+#                "networkProfile": {
+#                  "Id": "[resourceId('Microsoft.Network/networkProfiles', variables('networkProfileName'))]"
+#                }
+#            },
+#        "dependsOn": [
+#          "[resourceId('Microsoft.Network/networkProfiles', variables('networkProfileName'))]"
+#        ]
+#      }
+#    ],
+#    "outputs": {
+#        "aciMSIId": {
+#            "type": "String",
+#            "value": "[reference(variables('aciId'), '2018-10-01', 'Full').identity.principalId]"
+#        }
+#    }
+#}
+#DEPLOY
 
   # these key-value pairs are passed into the ARM Template's `parameters` block
   parameters = {
