@@ -173,7 +173,7 @@ resource "azurerm_storage_account" "storageAccount" {
 
 resource "azurerm_application_insights" "appInsights" {
   name                = "${var.namePrefix}appInsightContosoTravel"
-  location            = "${azurerm_resource_group.resourceGroup.location}"
+  location            = "southcentralus"
   resource_group_name = "${azurerm_resource_group.resourceGroup.name}"
   application_type    = "Web"
 }
