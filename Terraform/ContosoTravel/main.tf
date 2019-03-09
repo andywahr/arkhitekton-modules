@@ -431,7 +431,7 @@ resource "azurerm_template_deployment" "aciDataLoader" {
                 "osType": "Linux"
             },
         "dependsOn": [
-          "[resourceId('Microsoft.Network/networkProfiles', variables('networkProfileName'))]"
+          
         ]
       }
     ],
