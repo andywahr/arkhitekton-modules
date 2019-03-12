@@ -1,0 +1,12 @@
+"NamePrefix" : {
+    "value": "NAMEPREFIX"
+},
+"ConnectedServiceName" : {
+    "value": "CONNECTEDSERVICEID"
+},
+"DeployPlatform"  : {
+    "value": "kubernetes"
+},
+"SubscriptionId" : {
+    "value": "SUBSCRIPTIONID"
+}

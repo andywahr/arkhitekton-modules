@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: contosotravel-service
+    aadpodidbinding: akspodidentity
+  name: contosotravel-service
+  namespace: contosotravel-internal
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: contosotravel-service
+  template:
+    metadata:
+      labels:
+        app: contosotravel-service
+        aadpodidbinding: akspodidentity
+      name: contosotravel-service
+    spec:
+      containers:
+      - name: contosotravel-service
+        image: acrContosoTravel$NAMEPREFIX$.azurecr.io/contoso-travel-service
+        env:
+        - name: KeyVaultUrl
+          value: https://kv$NAMEPREFIX$.vault.azure.net/
+        - name: APPINSIGHTS_INSTRUMENTATIONKEY
+          value: $APPINSIGHTSKEY$
+        - name: KeyVaultAccountName
+          value: kv$NAMEPREFIX$
+        - name: ConnectionString__ServiceBusConnection
+          value: $SERVICECONNECTIONSTRING$     
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: contosotravel-service
+  namespace: contosotravel-internal
+  annotations:
+    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    app: contosotravel-service
+  type: LoadBalancer
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: contosotravel-service
+  annotations:
+    kubernetes.io/ingress.class: addon-http-application-routing
+spec:
+  rules:
+  - host: contosotravel-service.$DNSZONE$
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: contosotravel-service
+          servicePort: 80  
