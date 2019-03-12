@@ -110,9 +110,9 @@ output "serviceAccountName" {
 }
 
 output "serviceConnectionString" {
-  value = "${azurerm_servicebus_queue_authorization_rule.serviceBusReaderRule.primary_connection_string}"
+  value = "${replace(azurerm_servicebus_queue_authorization_rule.serviceBusReaderRule.primary_connection_string, "EntityPath.+", "")}"
 }
 
 output "eventingConnectionString" {
-  value = "${azurerm_servicebus_queue_authorization_rule.serviceBusWriterRule.primary_connection_string}"
+  value = "${replace(azurerm_servicebus_queue_authorization_rule.serviceBusWriterRule.primary_connection_string, "EntityPath.+", "")}"
 }

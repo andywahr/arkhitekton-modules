@@ -33,5 +33,10 @@ subjects:
   - kind: ServiceAccount
     name: tiller
     namespace: kube-system 
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: contosotravel-internal
 
 
