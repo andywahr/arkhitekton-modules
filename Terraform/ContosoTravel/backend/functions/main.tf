@@ -52,6 +52,22 @@ variable "vnetName" {
   type = "string"
 }
 
+variable "vnetId" {
+  type = "string"
+}
+
+variable "servicePrincipalObjectId" {
+  type = "string"
+}
+
+variable "servicePrincipalClientId" {
+  type = "string"
+}
+
+variable "servicePrincipalSecretName" {
+  type = "string"
+}
+
 resource "azurerm_app_service_plan" "serviceAppServicePlan" {
   name                = "asp-contosotravel-${var.namePrefix}-service"
   location            = "${var.location}"

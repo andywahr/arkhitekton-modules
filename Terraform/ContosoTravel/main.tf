@@ -280,6 +280,10 @@ module "service" {
   logAnalyticsId          = "${azurerm_log_analytics_workspace.logAnalytics.id}"
   logAnalyticsName        = "${azurerm_log_analytics_workspace.logAnalytics.name}"
   vnetName                = "${azurerm_subnet.appSubnet.name}"
+  vnetId                     = "${azurerm_subnet.appSubnet.id}"  
+  servicePrincipalObjectId   = "${var.servicePrincipalObjectId}"
+  servicePrincipalClientId   = "${var.servicePrincipalClientId}"
+  servicePrincipalSecretName = "${var.servicePrincipalSecretName}"  
 }
 
 module "webSite" {
