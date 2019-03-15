@@ -68,6 +68,10 @@ variable "servicePrincipalSecretName" {
   type = "string"
 }
 
+variable "web" {
+  type = "string"
+}
+
 resource "azurerm_app_service_plan" "serviceAppServicePlan" {
   name                = "asp-contosotravel-${var.namePrefix}-service"
   location            = "${var.location}"

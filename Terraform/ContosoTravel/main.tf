@@ -92,6 +92,14 @@ variable "servicePrincipalSecretName" {
   type = "string"
 }
 
+variable "web" {
+  type = "string"
+}
+
+variable "backend" {
+  type = "string"
+}
+
 resource "azurerm_resource_group" "resourceGroup" {
   name     = "${var.resourceGroupName}"
   location = "${var.location}"
@@ -283,7 +291,8 @@ module "service" {
   vnetId                     = "${azurerm_subnet.appSubnet.id}"  
   servicePrincipalObjectId   = "${var.servicePrincipalObjectId}"
   servicePrincipalClientId   = "${var.servicePrincipalClientId}"
-  servicePrincipalSecretName = "${var.servicePrincipalSecretName}"  
+  servicePrincipalSecretName = "${var.servicePrincipalSecretName}"
+  web                        = "${var.web}"  
 }
 
 module "webSite" {

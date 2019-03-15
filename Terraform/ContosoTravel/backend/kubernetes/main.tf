@@ -68,6 +68,10 @@ variable "serviceConnectionString" {
   type = "string"
 }
 
+variable "web" {
+  type = "string"
+}
+
 module "aksInstall" {
   source = "../../Kubernetes"
   namePrefix = "${var.namePrefix}"
@@ -85,6 +89,7 @@ module "aksInstall" {
   servicePrincipalClientId = "${var.servicePrincipalClientId}"
   servicePrincipalObjectId = "${var.servicePrincipalObjectId}"
   servicePrincipalSecretName = "${var.servicePrincipalSecretName}"
+  standalone = "${var.web == "websitekubernetes" ? "true" : "false"}"
 }
 
 # Create Static Public IP Address to be used by Nginx Ingress
@@ -94,4 +99,5 @@ resource "azurerm_public_ip" "nginx_ingress" {
   resource_group_name = "${var.resourceGroupName}"
   allocation_method   = "Static"
   domain_name_label   = "www-aks-contosotravel-${lower(var.namePrefix)}"
+  count             = "${var.web == "websitekubernetes" ? 0 : 1}"
 }

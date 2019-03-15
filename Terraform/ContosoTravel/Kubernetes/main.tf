@@ -60,6 +60,10 @@ variable "servicePrincipalSecretName" {
   type = "string"
 }
 
+variable "standalone" {
+  type = "string"
+}
+
 provider "azurerm" {
   subscription_id = "bc73a756-864c-4429-8918-fe8f8eeee4a7"
   alias           = "msftno"
@@ -82,13 +86,15 @@ resource "azurerm_user_assigned_identity" "aksPodIdentity" {
   location            = "${var.location}"
   resource_group_name = "${var.resourceGroupName}"
 
-  name = "aks-contosotrvl-${var.namePrefix}"
+  name  = "aks-contosotrvl-${var.namePrefix}"
+  count = "${var.standalone == "true" ? 0 : 1}"
 }
 
 resource "azurerm_role_assignment" "aksPodIdentityRoleAssignment" {
   scope                = "/subscriptions/${data.azurerm_client_config.current.subscription_id}/resourceGroups/${var.resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/${azurerm_user_assigned_identity.aksPodIdentity.name}"
   role_definition_name = "Managed Identity Operator"
   principal_id         = "${var.servicePrincipalObjectId}"
+  count                = "${var.standalone == "true" ? 0 : 1}"
 }
 
 # Create ACR
@@ -98,18 +104,21 @@ resource "azurerm_container_registry" "acr" {
   resource_group_name = "${var.resourceGroupName}"
   admin_enabled       = false
   sku                 = "Standard"
+  count               = "${var.standalone == "true" ? 0 : 1}"
 }
 
 resource "azurerm_role_assignment" "aksACRRoleAssignmentRead" {
   scope                = "/subscriptions/${data.azurerm_client_config.current.subscription_id}/resourceGroups/${var.resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/${azurerm_container_registry.acr.name}"
   role_definition_name = "AcrPull"
   principal_id         = "${var.servicePrincipalObjectId}"
+  count                = "${var.standalone == "true" ? 0 : 1}"
 }
 
 resource "azurerm_role_assignment" "aksACRRoleAssignmentWrite" {
   scope                = "/subscriptions/${data.azurerm_client_config.current.subscription_id}/resourceGroups/${var.resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/${azurerm_container_registry.acr.name}"
   role_definition_name = "AcrPush"
   principal_id         = "${data.azurerm_client_config.current.service_principal_object_id}"
+  count             = "${var.standalone == "true" ? 0 : 1}"
 }
 
 # Create managed Kubernetes cluster (AKS)
@@ -138,7 +147,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
       enabled                    = "true"
       log_analytics_workspace_id = "${var.logAnalyticsId}"
     }
-    
+
     http_application_routing {
       enabled = true
     }
@@ -147,6 +156,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
   network_profile {
     network_plugin = "azure"
   }
+  count             = "${var.standalone == "true" ? 0 : 1}"
 }
 
 resource "azurerm_log_analytics_solution" "ContainerInsights" {
@@ -160,6 +170,7 @@ resource "azurerm_log_analytics_solution" "ContainerInsights" {
     publisher = "Microsoft"
     product   = "OMSGallery/ContainerInsights"
   }
+  count             = "${var.standalone == "true" ? 0 : 1}"
 }
 
 resource "azurerm_key_vault_access_policy" "kubKeyVaultPolicy" {
@@ -172,4 +183,5 @@ resource "azurerm_key_vault_access_policy" "kubKeyVaultPolicy" {
     "get",
     "list",
   ]
+  count             = "${var.standalone == "true" ? 0 : 1}"
 }
