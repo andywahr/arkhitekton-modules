@@ -29,6 +29,16 @@ $dnsZone = (az aks show --resource-group $rg --subscription $sub --name ("aks-Co
 "Get Info serviceConnStr Resource Group - dnsZone"
 $serviceConnStr = (az keyvault secret show --subscription $sub --vault-name "kv$namePrefix" --name "ContosoTravel--ServiceConnectionString" --query value).Replace('"', '')
 
+# Get the id of the service principal configured for AKS
+$CLIENT_ID=(az aks show --resource-group $rg --subscription $sub --name ("aks-ContosoTravel-" + $namePrefix) --query "servicePrincipalProfile.clientId" --output tsv)
+
+# Get the ACR registry resource id
+$ACR_ID=$(az acr show --name ("acrContosoTravel" + $namePrefix) --resource-group $rg --subscription $sub --query "id" --output tsv)
+
+# Create role assignment
+az role assignment create --assignee $CLIENT_ID --role acrpull --scope $ACR_ID
+
+
 function replaceInFiles([string]$fileName) {
   $contents = get-content $fileName | out-string
   $contents = $contents.Replace('$CLIENTID$', $clientId)

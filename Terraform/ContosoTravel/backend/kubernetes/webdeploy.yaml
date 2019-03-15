@@ -5,7 +5,7 @@ metadata:
     app: contosotravel-service
     aadpodidbinding: akspodidentity
   name: contosotravel-service
-  namespace: contosotravel-internal
+  namespace: default
 spec:
   replicas: 1
   selector:
@@ -35,7 +35,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: contosotravel-service
-  namespace: contosotravel-internal
+  namespace: default
   annotations:
     service.beta.kubernetes.io/azure-load-balancer-internal: "true"
 spec:
