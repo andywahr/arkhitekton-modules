@@ -89,7 +89,7 @@ module "aksInstall" {
   servicePrincipalClientId = "${var.servicePrincipalClientId}"
   servicePrincipalObjectId = "${var.servicePrincipalObjectId}"
   servicePrincipalSecretName = "${var.servicePrincipalSecretName}"
-  standalone = "${var.web == "websitekubernetes" ? "true" : "false"}"
+  standalone = "${var.web == "websitekubernetes" ? "false" : "true"}"
 }
 
 # Create Static Public IP Address to be used by Nginx Ingress
