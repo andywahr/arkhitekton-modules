@@ -27,7 +27,7 @@ $appInsightsKey = az resource show --resource-group $rg --subscription $sub --re
 "Get Info From Resource Group - dnsZone"
 $dnsZone = (az aks show --resource-group $rg --subscription $sub --name ("aks-ContosoTravel-" + $namePrefix) --query addonProfiles.httpApplicationRouting.config.HTTPApplicationRoutingZoneName).Replace('"', '')
 "Get Info serviceConnStr Resource Group - dnsZone"
-$serviceConnStr = ((az keyvault secret show --subscription $sub --vault-name "kv$namePrefix" --name "ContosoTravel--ServiceConnectionString" --query value).Replace('"', '')) -replace 'EntityPath.+', ''
+$serviceConnStr = ((az keyvault secret show --subscription $sub --vault-name "kv$namePrefix" --name "ContosoTravel--ServiceConnectionString" --query value).Replace('"', '')) -replace ';EntityPath.+', ''
 
 # Get the id of the service principal configured for AKS
 $CLIENT_ID=(az aks show --resource-group $rg --subscription $sub --name ("aks-ContosoTravel-" + $namePrefix) --query "servicePrincipalProfile.clientId" --output tsv)
