@@ -101,7 +101,13 @@ resource "azurerm_key_vault_secret" "servicesMiddlewareAccountName" {
 
 resource "azurerm_key_vault_secret" "serviceConnectionString" {
   name         = "ContosoTravel--ServiceConnectionString"
-  value        = "${azurerm_servicebus_queue_authorization_rule.serviceBusReaderRule.primary_connection_string}"
+  value = "${replace(azurerm_servicebus_queue_authorization_rule.serviceBusWriterRule.primary_connection_string, ";EntityPath.+", "")}"
+  key_vault_id = "${var.keyVaultId}"
+}
+
+resource "azurerm_key_vault_secret" "eventingConnectionString" {
+  name         = "ContosoTravel--EventingConnectionString"
+  value = "${replace(azurerm_servicebus_queue_authorization_rule.serviceBusReaderRule.primary_connection_string, ";EntityPath.+", "")}"
   key_vault_id = "${var.keyVaultId}"
 }
 
@@ -110,9 +116,9 @@ output "serviceAccountName" {
 }
 
 output "serviceConnectionString" {
-  value = "${replace(azurerm_servicebus_queue_authorization_rule.serviceBusReaderRule.primary_connection_string, "EntityPath.+", "")}"
+  value = "${replace(azurerm_servicebus_queue_authorization_rule.serviceBusReaderRule.primary_connection_string, ";EntityPath.+", "")}"
 }
 
 output "eventingConnectionString" {
-  value = "${replace(azurerm_servicebus_queue_authorization_rule.serviceBusWriterRule.primary_connection_string, "EntityPath.+", "")}"
+  value = "${replace(azurerm_servicebus_queue_authorization_rule.serviceBusWriterRule.primary_connection_string, ";EntityPath.+", "")}"
 }
