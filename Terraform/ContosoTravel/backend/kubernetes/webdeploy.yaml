@@ -28,7 +28,7 @@ spec:
           value: $APPINSIGHTSKEY$
         - name: KeyVaultAccountName
           value: kv$NAMEPREFIX$
-        - name: ConnectionString__ServiceBusConnection
+        - name: ServiceBusConnection
           value: $SERVICECONNECTIONSTRING$     
 ---
 apiVersion: v1
