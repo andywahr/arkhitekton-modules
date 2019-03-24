@@ -1,26 +1,5 @@
 # a build with no CI
 trigger: none
-
-variables:
-  location: ''
-  namePrefix: ''
-  cdn: '' 
-  trafficmanager: '' 
-  apimgmt: ''
-  firewall: ''
-  appgateway: ''
-  mobile: ''
-  adb2c: '' 
-  streamanalytics: ''
-  cognitiveservices: ''
-  sqldatawarehouse: ''
-  hdinsight: ''
-  search: ''
-  bot: ''
-  backend: ''
-  data: ''
-  eventing: ''
-  web: ''
   
 jobs:
 - job: Deploy_Infrastructure_via_Terraform
