@@ -80,12 +80,9 @@ resource "azurerm_mysql_server" "mysqlServer" {
 resource "azurerm_mysql_database" "mysqlServerDatabase" {
   name                = "ContosoTravel"
   resource_group_name = "${var.resourceGroupName}"
-  location            = "${var.location}"
   server_name         = "${azurerm_mysql_server.mysqlServer.name}"
-
-  tags {
-    environment = "production"
-  }
+  charset             = "utf8"
+  collation           = "utf8_unicode_ci"
 }
 
 # Add back in when ACI VNet work
