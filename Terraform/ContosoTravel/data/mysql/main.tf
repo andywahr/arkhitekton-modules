@@ -59,7 +59,7 @@ resource "azurerm_mysql_server" "mysqlServer" {
   location                     = "${var.location}"
   version                      = "5.7"
   ssl_enforcement              = "Enabled"  
-  administrator_login          = "${random_string.dataAdministratorLogin.result}"
+  administrator_login          = "mysql${random_string.dataAdministratorLogin.result}"
   administrator_login_password = "${random_string.dataAdministratorLoginPassword.result}"
 
 
@@ -85,21 +85,6 @@ resource "azurerm_mysql_database" "mysqlServerDatabase" {
   collation           = "utf8_unicode_ci"
 }
 
-# Add back in when ACI VNet work
-#
-#resource "azurerm_mysql_virtual_network_rule" "sqlAppVnetrule" {
-#  name                = "sql-vnet-rule-app"
-#  resource_group_name = "${var.resourceGroupName}"
-#  server_name         = "${azurerm_mysql_server.mysqlServer.name}"
-#  subnet_id           = "${var.vnetId}"
-#}
-#
-#resource "azurerm_mysql_virtual_network_rule" "sqlAciVnetrule" {
-#  name                = "sql-vnet-rule-aci"
-#  resource_group_name = "${var.resourceGroupName}"
-#  server_name         = "${azurerm_mysql_server.mysqlServer.name}"
-#  subnet_id           = "${var.aciVnetId}"
-#}
 resource "azurerm_mysql_firewall_rule" "sqlAllAzureServices" {
   name                = "sqlAllAzureServicesRule"
   resource_group_name = "${var.resourceGroupName}"
@@ -144,19 +129,6 @@ resource "azurerm_monitor_diagnostic_setting" "dataDiag" {
   }
 }
 
-#resource "azurerm_log_analytics_solution" "sqlInsights" {
-#  solution_name         = "SQLInsights"
-#  location            = "East US"
-#  resource_group_name = "${var.resourceGroupName}"
-#  workspace_resource_id = "${var.logAnalyticsId}"
-#  workspace_name        = "${var.logAnalyticsName}"
-#
-#  plan {
-#    publisher = "Microsoft"
-#    product   = "OMSGallery/AzureSQLAnalytics"
-#  }
-#}
-
 resource "azurerm_key_vault_secret" "dataType" {
   name     = "ContosoTravel--DataType"
   value    = "MySQL"
@@ -177,7 +149,7 @@ resource "azurerm_key_vault_secret" "databaseName" {
 
 resource "azurerm_key_vault_secret" "dataAdministratorLogin" {
   name     = "ContosoTravel--DataAdministratorLogin"
-  value    = "${random_string.dataAdministratorLogin.result}"
+  value    = "mysql${random_string.dataAdministratorLogin.result}"
   key_vault_id = "${var.keyVaultId}"
 }
 
