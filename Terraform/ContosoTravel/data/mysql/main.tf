@@ -115,6 +115,20 @@ resource "azurerm_mysql_firewall_rule" "sqlAllServices" {
   end_ip_address      = "255.255.255.255"
 }
 
+resource "azurerm_mysql_virtual_network_rule" "sqlAppVnetRule" {
+  name                = "mysql-vnet-rule"
+  resource_group_name = "${var.resourceGroupName}"
+  server_name         = "${azurerm_mysql_server.mysqlServer.name}"
+  subnet_id           = "${var.vnetId}"
+}
+
+resource "azurerm_mysql_virtual_network_rule" "sqlAciVnetRule" {
+  name                = "mysql-vnet-rule"
+  resource_group_name = "${var.resourceGroupName}"
+  server_name         = "${azurerm_mysql_server.mysqlServer.name}"
+  subnet_id           = "${var.aciVnetId}"
+}
+
 resource "azurerm_monitor_diagnostic_setting" "dataDiag" {
   name               = "${var.namePrefix}-dataDiag"
   target_resource_id = "${azurerm_mysql_server.mysqlServer.id}"
