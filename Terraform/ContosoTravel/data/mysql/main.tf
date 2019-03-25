@@ -63,10 +63,10 @@ resource "azurerm_mysql_server" "mysqlServer" {
   administrator_login_password = "${random_string.dataAdministratorLoginPassword.result}"
 
 
-    sku {
-    name     = "B_Gen5_2"
-    capacity = 2
-    tier     = "Basic"
+  sku {
+    name     = "GP_Gen5_4"
+    capacity = 4
+    tier     = "GeneralPurpose"
     family   = "Gen5"
   }
 
