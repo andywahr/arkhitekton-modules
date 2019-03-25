@@ -54,7 +54,7 @@ resource "random_string" "dataAccountPassword" {
 }
 
 resource "azurerm_mysql_server" "mysqlServer" {
-  name                         = "contosotravel-sqlserver-${var.namePrefix}"
+  name                         = "contosotravel-${var.namePrefix}"
   resource_group_name          = "${var.resourceGroupName}"
   location                     = "${var.location}"
   version                      = "5.7"
