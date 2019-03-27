@@ -241,7 +241,7 @@ resource "azurerm_key_vault_secret" "subscriptionId" {
 }
 
 resource "azurerm_key_vault_secret" "tenantId" {
-  name         = "ContosoTravel--SubscriptionId"
+  name         = "ContosoTravel--TenantId"
   value        = "${data.azurerm_client_config.current.tenant_id}"
   key_vault_id = "${azurerm_key_vault.keyVault.id}"
 }
@@ -249,6 +249,12 @@ resource "azurerm_key_vault_secret" "tenantId" {
 resource "azurerm_key_vault_secret" "resourceGroupName" {
   name         = "ContosoTravel--ResourceGroupName"
   value        = "${azurerm_resource_group.resourceGroup.name}"
+  key_vault_id = "${azurerm_key_vault.keyVault.id}"
+}
+
+resource "azurerm_key_vault_secret" "tenantId" {
+  name         = "ContosoTravel--AzureRegion"
+  value        = "${var.location}"
   key_vault_id = "${azurerm_key_vault.keyVault.id}"
 }
 
