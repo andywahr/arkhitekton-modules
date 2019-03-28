@@ -9,8 +9,6 @@ param
       [Parameter(Mandatory=$true)]
       $namePrefix,
 
-      [switch]$includeNginx,
-
       [Parameter(Mandatory=$true)]
       $pathToDeploy
 )
