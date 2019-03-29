@@ -252,7 +252,7 @@ resource "azurerm_key_vault_secret" "resourceGroupName" {
   key_vault_id = "${azurerm_key_vault.keyVault.id}"
 }
 
-resource "azurerm_key_vault_secret" "tenantId" {
+resource "azurerm_key_vault_secret" "azureRegion" {
   name         = "ContosoTravel--AzureRegion"
   value        = "${var.location}"
   key_vault_id = "${azurerm_key_vault.keyVault.id}"
