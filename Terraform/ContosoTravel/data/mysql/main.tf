@@ -161,7 +161,7 @@ resource "azurerm_key_vault_secret" "dataAdministratorLoginPassword" {
 
 resource "azurerm_key_vault_secret" "dataAccountUserName" {
   name     = "ContosoTravel--DataAccountUserName"
-  value    = "${random_string.dataAccountUserName.result}"
+  value    = "mysql${random_string.dataAccountUserName.result}"
   key_vault_id = "${var.keyVaultId}"
 }
 

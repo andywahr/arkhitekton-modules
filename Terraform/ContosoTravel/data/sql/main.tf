@@ -58,7 +58,7 @@ resource "azurerm_sql_server" "sqlServer" {
   resource_group_name          = "${var.resourceGroupName}"
   location                     = "${var.location}"
   version                      = "12.0"
-  administrator_login          = "${random_string.dataAdministratorLogin.result}"
+  administrator_login          = "sql${random_string.dataAdministratorLogin.result}"
   administrator_login_password = "${random_string.dataAdministratorLoginPassword.result}"
 }
 
@@ -151,7 +151,7 @@ resource "azurerm_key_vault_secret" "databaseName" {
 
 resource "azurerm_key_vault_secret" "dataAdministratorLogin" {
   name     = "ContosoTravel--DataAdministratorLogin"
-  value    = "${random_string.dataAdministratorLogin.result}"
+  value    = "sql${random_string.dataAdministratorLogin.result}"
   key_vault_id = "${var.keyVaultId}"
 }
 
@@ -163,7 +163,7 @@ resource "azurerm_key_vault_secret" "dataAdministratorLoginPassword" {
 
 resource "azurerm_key_vault_secret" "dataAccountUserName" {
   name     = "ContosoTravel--DataAccountUserName"
-  value    = "${random_string.dataAccountUserName.result}"
+  value    = "sql${random_string.dataAccountUserName.result}"
   key_vault_id = "${var.keyVaultId}"
 }
 
