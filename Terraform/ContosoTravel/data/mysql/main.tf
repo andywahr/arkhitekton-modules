@@ -34,7 +34,7 @@ variable "keyVaultId" {
 }
 
 resource "random_string" "dataAdministratorLogin" {
-  length = 13
+  length = 11
   special = false
 }
 
@@ -44,7 +44,7 @@ resource "random_string" "dataAdministratorLoginPassword" {
 }
 
 resource "random_string" "dataAccountUserName" {
-  length = 13
+  length = 11
   special = false
 }
 
