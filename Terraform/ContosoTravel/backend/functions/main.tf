@@ -108,8 +108,8 @@ resource "azurerm_function_app" "service" {
     "KeyVaultUrl"                    = "${var.keyVaultUrl}"
     "KeyVaultAccountName"            = "${var.keyVaultAccountName}"
     "WEBSITE_NODE_DEFAULT_VERSION"   = "10.0.0"
-    "FUNCTIONS_WORKER_RUNTIME"       = "${var.platform == "servicesnodekubeservicebus" ? "node" : "dotnet"}"
-    "ServiceBusConnection"           = "${replace(var.serviceConnectionString, ";EntityPath.+", "")}"
+    "FUNCTIONS_WORKER_RUNTIME"       = "${var.platform == "servicesnodeservicebus" ? "node" : "dotnet"}"
+    "ServiceBusConnection"           = "${replace(var.serviceConnectionString, "/;EntityPath.+/", "")}"
   }
 
 }
