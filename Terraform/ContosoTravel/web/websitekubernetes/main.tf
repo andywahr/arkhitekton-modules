@@ -60,6 +60,9 @@ variable "servicePrincipalSecretName" {
   type = "string"
 }
 
+variable "platform" {
+  type = "string"
+}
 
 module "aksInstall" {
   source = "../../Kubernetes"

@@ -72,6 +72,10 @@ variable "web" {
   type = "string"
 }
 
+variable "platform" {
+  type = "string"
+}
+
 resource "azurerm_app_service_plan" "serviceAppServicePlan" {
   name                = "asp-contosotravel-${var.namePrefix}-service"
   location            = "${var.location}"
@@ -94,14 +98,18 @@ resource "azurerm_function_app" "service" {
   identity {
     type = "SystemAssigned"
   }
-
+  
+  site_config {
+     always_on = true
+  }   
+   
   app_settings {
     "APPINSIGHTS_INSTRUMENTATIONKEY" = "${var.appInsightsKey}"
     "KeyVaultUrl"                    = "${var.keyVaultUrl}"
     "KeyVaultAccountName"            = "${var.keyVaultAccountName}"
-    "WEBSITE_NODE_DEFAULT_VERSION"   = "10.6.0"
-    "FUNCTIONS_WORKER_RUNTIME"       = "dotnet"
-    "ServiceBusConnection"           = "${var.serviceConnectionString}"
+    "WEBSITE_NODE_DEFAULT_VERSION"   = "10.0.0"
+    "FUNCTIONS_WORKER_RUNTIME"       = "${var.platform == "servicesnodekubeservicebus" ? "node" : "dotnet"}"
+    "ServiceBusConnection"           = "${replace(var.serviceConnectionString, ";EntityPath.+", "")}"
   }
 
 }

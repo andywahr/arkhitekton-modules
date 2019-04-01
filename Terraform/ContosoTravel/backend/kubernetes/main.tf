@@ -72,6 +72,10 @@ variable "web" {
   type = "string"
 }
 
+variable "platform" {
+  type = "string"
+}
+
 module "aksInstall" {
   source = "../../Kubernetes"
   namePrefix = "${var.namePrefix}"

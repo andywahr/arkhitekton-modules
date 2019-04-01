@@ -96,7 +96,15 @@ variable "web" {
   type = "string"
 }
 
+variable "web_platform" {
+  type = "string"
+}
+
 variable "backend" {
+  type = "string"
+}
+
+variable "backend_platform" {
   type = "string"
 }
 
@@ -299,6 +307,7 @@ module "service" {
   servicePrincipalClientId   = "${var.servicePrincipalClientId}"
   servicePrincipalSecretName = "${var.servicePrincipalSecretName}"
   web                        = "${var.web}"  
+  platform                   = "${var.backend_platform}"
 }
 
 module "webSite" {
@@ -317,6 +326,7 @@ module "webSite" {
   servicePrincipalObjectId   = "${var.servicePrincipalObjectId}"
   servicePrincipalClientId   = "${var.servicePrincipalClientId}"
   servicePrincipalSecretName = "${var.servicePrincipalSecretName}"
+  platform                   = "${var.web_platform}"
 }
 
 module "data" {
