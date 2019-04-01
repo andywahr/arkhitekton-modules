@@ -30,6 +30,6 @@ jobs:
     inputs:
       InstallTerraform: true
       TemplatePath: Terraform/ContosoTravel/LoadTest
-      Arguments: 'apply -var "namePrefix=$(namePrefix)" -auto-approve'
+      Arguments: 'apply -var "namePrefix=$(namePrefix)" -var "resourceGroupName=$(ResourceGroupName)" -auto-approve'
       UseAzureSub: true
       ConnectedServiceNameARM: $(ConnectedServiceName)
