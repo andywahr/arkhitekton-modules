@@ -57,7 +57,7 @@ resource "azurerm_container_group" "loadTestWestUS2" {
 
   container {
     name   = "loadtest"
-    image  = "andywahr/arkhitekton-loadtest"
+    image  = "andywahr/contosotravel-loadtest"
     cpu    = "2"
     memory = "3.5"
 

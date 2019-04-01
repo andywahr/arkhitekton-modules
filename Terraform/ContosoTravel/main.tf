@@ -375,7 +375,7 @@ module "appGateway" {
 #
 #  container {
 #    name   = "dataloader-aci-logs"
-#    image  = "andywahr/arkhitekton-dataloader"
+#    image  = "andywahr/contosotravel-dataloader"
 #    cpu    = "0.5"
 #    memory = "1.5"
 #
@@ -438,7 +438,7 @@ resource "azurerm_template_deployment" "aciDataLoader" {
                     {
                         "name": "dataloader",
                         "properties": {
-                            "image": "andywahr/arkhitekton-dataloader",
+                            "image": "andywahr/contosotravel-dataloader",
                             "ports": [],
                             "environmentVariables": [
                                 {
@@ -536,7 +536,7 @@ DEPLOY
 #                    {
 #                        "name": "dataloader",
 #                        "properties": {
-#                            "image": "andywahr/arkhitekton-dataloader",
+#                            "image": "andywahr/contosotravel-dataloader",
 #                            "ports": [],
 #                            "environmentVariables": [
 #                                {
