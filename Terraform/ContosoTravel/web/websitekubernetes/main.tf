@@ -84,15 +84,12 @@ module "aksInstall" {
   standalone = "true"
 }
 
-# Create Static Public IP Address to be used by Nginx Ingress
-resource "azurerm_public_ip" "nginx_ingress" {
-  name                = "aks-ContosoTravel-${var.namePrefix}-nginx-ingress-pip"
-  location            = "${var.location}"
-  resource_group_name = "${var.resourceGroupName}"
-  allocation_method   = "Static"
-  domain_name_label   = "www-aks-contosotravel-${lower(var.namePrefix)}"
+resource "azurerm_key_vault_secret" "webSiteFQDN" {
+  name         = "ContosoTravel--WebSiteFQDN"
+  value        = "http://contosotravel-web.${module.aksInstall.DNSZone}"
+  key_vault_id = "${var.keyVaultId}"
 }
 
 output "webSiteFQDN" {
-  value = "${azurerm_public_ip.nginx_ingress.fqdn}"
+  value = "contosotravel-web.${module.aksInstall.DNSZone}"
 }

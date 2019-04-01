@@ -92,13 +92,13 @@ resource "azurerm_app_service" "webSite" {
     "WEBSITE_NODE_DEFAULT_VERSION"   = "10.6.0"
   }
 
-  site_config { 
+  site_config {
     virtual_network_name = "${var.vnetName}"
   }
 }
 
 resource "azurerm_key_vault_access_policy" "webKeyVaultPolicy" {
-  key_vault_id        = "${var.keyVaultId}"
+  key_vault_id = "${var.keyVaultId}"
 
   tenant_id = "${data.azurerm_client_config.current.tenant_id}"
   object_id = "${azurerm_app_service.webSite.identity.0.principal_id}"
@@ -133,8 +133,12 @@ resource "azurerm_key_vault_access_policy" "webKeyVaultPolicy" {
 #  }
 #}
 
+resource "azurerm_key_vault_secret" "webSiteFQDN" {
+  name         = "ContosoTravel--WebSiteFQDN"
+  value        = "http://${azurerm_app_service.webSite.default_site_hostname}"
+  key_vault_id = "${var.keyVaultId}"
+}
+
 output "webSiteFQDN" {
   value = "${azurerm_app_service.webSite.default_site_hostname}"
 }
-
-

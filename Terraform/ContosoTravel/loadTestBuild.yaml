@@ -1,0 +1,35 @@
+# a build with no CI
+trigger: none
+  
+jobs:
+- job: Deploy_Infrastructure_via_Terraform
+  pool:
+    name: Hosted VS2017
+
+  steps:
+  - task: petergroenewegen.PeterGroenewegen-Xpirit-Vsts-Release-Terraform.Xpirit-Vsts-Release-Terraform.Terraform@2
+    displayName: 'Terraform init'
+    inputs:
+      InstallTerraform: true
+      TemplatePath: Terraform/ContosoTravel/LoadTest
+      Arguments: 'init'
+      UseAzureSub: true
+      ConnectedServiceNameARM: $(ConnectedServiceName)
+  
+  - task: petergroenewegen.PeterGroenewegen-Xpirit-Vsts-Release-Terraform.Xpirit-Vsts-Release-Terraform.Terraform@2
+    displayName: 'Terraform plan'
+    inputs:
+      InstallTerraform: true
+      TemplatePath: Terraform/ContosoTravel/LoadTest
+      Arguments: 'plan'
+      UseAzureSub: true
+      ConnectedServiceNameARM: $(ConnectedServiceName)
+  
+  - task: petergroenewegen.PeterGroenewegen-Xpirit-Vsts-Release-Terraform.Xpirit-Vsts-Release-Terraform.Terraform@2
+    displayName: 'Terraform apply'
+    inputs:
+      InstallTerraform: true
+      TemplatePath: Terraform/ContosoTravel/LoadTest
+      Arguments: 'apply -var "namePrefix=$(namePrefix)" -auto-approve'
+      UseAzureSub: true
+      ConnectedServiceNameARM: $(ConnectedServiceName)
