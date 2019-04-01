@@ -12,13 +12,13 @@ jobs:
     inputs:
       rootDirectory: Terraform/ContosoTravel
       targetFiles: override.tf
-  
+
   - task: petergroenewegen.PeterGroenewegen-Xpirit-Vsts-Release-Terraform.Xpirit-Vsts-Release-Terraform.Terraform@2
     displayName: 'Terraform init'
     inputs:
       InstallTerraform: true
       TemplatePath: Terraform/ContosoTravel
-      Arguments: init
+      Arguments: 'init'
       UseAzureSub: true
       ConnectedServiceNameARM: $(ConnectedServiceName)
   
@@ -27,7 +27,7 @@ jobs:
     inputs:
       InstallTerraform: true
       TemplatePath: Terraform/ContosoTravel
-      Arguments: 'init -var "location=$(location)" -var "namePrefix=$(namePrefix)"'
+      Arguments: 'plan'
       UseAzureSub: true
       ConnectedServiceNameARM: $(ConnectedServiceName)
   
@@ -36,6 +36,6 @@ jobs:
     inputs:
       InstallTerraform: true
       TemplatePath: Terraform/ContosoTravel
-      Arguments: 'apply -var "location=$(location)" -var "namePrefix=$(namePrefix)" -var "cdn=$(cdn)" -var "trafficmanager=$(trafficmanager)" -var "apimgmt=$(apimgmt)" -var "firewall=$(firewall)" -var "appgateway=$(appgateway)" -var "mobile=$(mobile)" -var "adb2c=$(adb2c)" -var "streamanalytics=$(streamanalytics)" -var "cognitiveservices=$(cognitiveservices)" -var "sqldatawarehouse=$(sqldatawarehouse)" -var "hdinsight=$(hdinsight)" -var "search=$(search)" -var "bot=$(bot)" -var "servicePrincipalObjectId=$(servicePrincipalObjectId)" -var "resourceGroupName=$(ResourceGroupName)" -var "servicePrincipalClientId=$(servicePrincipalClientId)" -var "servicePrincipalSecretName=$(servicePrincipalSecretName)" -var "backend=$(backend)" -var "web=$(web)" "web_platform=$(web_platform)" "backend_platform=$(backend)" -auto-approve'
+      Arguments: 'apply -auto-approve'
       UseAzureSub: true
       ConnectedServiceNameARM: $(ConnectedServiceName)
