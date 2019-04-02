@@ -91,7 +91,7 @@ resource "azurerm_container_group" "loadTestNorthCentralUS" {
       port     = 80
       protocol = "TCP"
     }
-
+        
     environment_variables {
       "URL" = "${replace(data.azurerm_key_vault_secret.webSiteFQDN.value, "//$/", "")}"
     }

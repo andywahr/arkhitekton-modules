@@ -101,7 +101,7 @@ resource "azurerm_key_vault_secret" "servicesMiddlewareAccountName" {
 
 resource "azurerm_key_vault_secret" "serviceConnectionString" {
   name         = "ContosoTravel--ServiceConnectionString"
-  value = "${replace(azurerm_servicebus_queue_authorization_rule.serviceBusWriterRule.primary_connection_string, "/;EntityPath.+/", "")}"
+  value = "${azurerm_servicebus_queue_authorization_rule.serviceBusWriterRule.primary_connection_string}"
   key_vault_id = "${var.keyVaultId}"
 }
 
@@ -116,7 +116,7 @@ output "serviceAccountName" {
 }
 
 output "serviceConnectionString" {
-  value = "${replace(azurerm_servicebus_queue_authorization_rule.serviceBusReaderRule.primary_connection_string, "/;EntityPath.+/", "")}"
+  value = "${azurerm_servicebus_queue_authorization_rule.serviceBusReaderRule.primary_connection_string}"
 }
 
 output "eventingConnectionString" {

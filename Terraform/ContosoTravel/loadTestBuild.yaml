@@ -21,7 +21,7 @@ jobs:
     inputs:
       InstallTerraform: true
       TemplatePath: Terraform/ContosoTravel/LoadTest
-      Arguments: 'plan'
+      Arguments: 'plan -var "namePrefix=$(namePrefix)" -var "resourceGroupName=$(ResourceGroupName)"'
       UseAzureSub: true
       ConnectedServiceNameARM: $(ConnectedServiceName)
   
