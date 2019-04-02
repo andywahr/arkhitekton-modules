@@ -114,7 +114,7 @@ resource "azurerm_resource_group" "resourceGroup" {
 }
 
 resource "azurerm_log_analytics_workspace" "logAnalytics" {
-  name                = "${var.namePrefix}logAnalytics"
+  name                = "contosoTravel${var.namePrefix}logAnalytics"
   resource_group_name = "${azurerm_resource_group.resourceGroup.name}"
   location            = "East US"
   sku                 = "PerGB2018"

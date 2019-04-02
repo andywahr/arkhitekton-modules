@@ -31,7 +31,7 @@ resource "azurerm_container_group" "loadTestEastUS2" {
 
   container {
     name   = "loadtest"
-    image  = "andywahr/arkhitekton-loadtest"
+    image  = "andywahr/contosotravel-loadtest"
     cpu    = "2"
     memory = "3.5"
 
@@ -83,7 +83,7 @@ resource "azurerm_container_group" "loadTestNorthCentralUS" {
 
   container {
     name   = "loadtest"
-    image  = "andywahr/arkhitekton-loadtest"
+    image  = "andywahr/contosotravel-loadtest"
     cpu    = "2"
     memory = "3.5"
 
