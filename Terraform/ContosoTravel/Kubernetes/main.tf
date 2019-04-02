@@ -186,6 +186,6 @@ resource "azurerm_key_vault_access_policy" "kubKeyVaultPolicy" {
   count             = "${var.standalone == "true" ? 1 : 0}"
 }
 
-output "DNSZone" {
-  value = "${azurerm_kubernetes_cluster.aks.http_application_routing_zone_name}"
+output "aksName" {
+  value = "aks-ContosoTravel-${var.namePrefix}"
 }

@@ -96,12 +96,3 @@ module "aksInstall" {
   standalone = "${var.web == "websitekubernetes" ? "false" : "true"}"
 }
 
-# Create Static Public IP Address to be used by Nginx Ingress
-resource "azurerm_public_ip" "nginx_ingress" {
-  name                = "aks-ContosoTravel-${var.namePrefix}-nginx-ingress-pip"
-  location            = "${var.location}"
-  resource_group_name = "${var.resourceGroupName}"
-  allocation_method   = "Static"
-  domain_name_label   = "www-aks-contosotravel-${lower(var.namePrefix)}"
-  count             = "${var.web == "websitekubernetes" ? 0 : 1}"
-}

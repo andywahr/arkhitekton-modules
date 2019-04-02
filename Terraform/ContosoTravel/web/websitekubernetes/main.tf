@@ -84,12 +84,17 @@ module "aksInstall" {
   standalone = "true"
 }
 
+data "azurerm_kubernetes_cluster" "aksRef" {
+  name                = "${module.aksInstall.aksName}"
+  resource_group_name = "${var.resourceGroupName}"
+}
+
 resource "azurerm_key_vault_secret" "webSiteFQDN" {
   name         = "ContosoTravel--WebSiteFQDN"
-  value        = "http://contosotravel-web.${module.aksInstall.DNSZone}"
+  value        = "http://contosotravel-web.module.${data.azurerm_kubernetes_cluster.aksRef.addon_profile.0.http_application_routing.0.http_application_routing_zone_name}"
   key_vault_id = "${var.keyVaultId}"
 }
 
 output "webSiteFQDN" {
-  value = "contosotravel-web.${module.aksInstall.DNSZone}"
+  value = "contosotravel-web.${data.azurerm_kubernetes_cluster.aksRef.addon_profile.0.http_application_routing.0.http_application_routing_zone_name}"
 }
