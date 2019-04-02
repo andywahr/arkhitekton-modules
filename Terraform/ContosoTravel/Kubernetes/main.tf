@@ -187,5 +187,5 @@ resource "azurerm_key_vault_access_policy" "kubKeyVaultPolicy" {
 }
 
 output "DNSZone" {
-  value = "${azurerm_kubernetes_cluster.aks.http_application_routing.http_application_routing_zone_name}"
+  value = "${azurerm_kubernetes_cluster.aks.http_application_routing_zone_name}"
 }
