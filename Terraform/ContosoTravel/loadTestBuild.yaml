@@ -2,34 +2,19 @@
 trigger: none
   
 jobs:
-- job: Deploy_Infrastructure_via_Terraform
+- job: Deploy_LoadTest_via_Terraform
   pool:
-    name: Hosted VS2017
+    name: Hosted Ubuntu 1604
+
+  variables:
+    ConnectedServiceName_local: $(ConnectedServiceName)
 
   steps:
-  - task: petergroenewegen.PeterGroenewegen-Xpirit-Vsts-Release-Terraform.Xpirit-Vsts-Release-Terraform.Terraform@2
-    displayName: 'Terraform init'
+  - task: AzureCLI@1
+    displayName: 'Azure CLI - Run Terraform'
     inputs:
-      InstallTerraform: true
-      TemplatePath: Terraform/ContosoTravel/LoadTest
-      Arguments: 'init'
-      UseAzureSub: true
-      ConnectedServiceNameARM: $(ConnectedServiceName)
-  
-  - task: petergroenewegen.PeterGroenewegen-Xpirit-Vsts-Release-Terraform.Xpirit-Vsts-Release-Terraform.Terraform@2
-    displayName: 'Terraform plan'
-    inputs:
-      InstallTerraform: true
-      TemplatePath: Terraform/ContosoTravel/LoadTest
-      Arguments: 'plan -var "namePrefix=$(namePrefix)" -var "resourceGroupName=$(ResourceGroupName)"'
-      UseAzureSub: true
-      ConnectedServiceNameARM: $(ConnectedServiceName)
-  
-  - task: petergroenewegen.PeterGroenewegen-Xpirit-Vsts-Release-Terraform.Xpirit-Vsts-Release-Terraform.Terraform@2
-    displayName: 'Terraform apply'
-    inputs:
-      InstallTerraform: true
-      TemplatePath: Terraform/ContosoTravel/LoadTest
-      Arguments: 'apply -var "namePrefix=$(namePrefix)" -var "resourceGroupName=$(ResourceGroupName)" -auto-approve'
-      UseAzureSub: true
-      ConnectedServiceNameARM: $(ConnectedServiceName)
+      addSpnToEnvironment: true    
+      azureSubscription: '${{ variables.ConnectedServiceName_local }}'
+      scriptPath: '$(Build.sourcesDirectory)/Terraform/ContosoTravel/LoadTest/deploy.bash'
+      arguments: '$(namePrefix) $(ResourceGroupName)'
+      workingDirectory: $(Build.sourcesDirectory)
