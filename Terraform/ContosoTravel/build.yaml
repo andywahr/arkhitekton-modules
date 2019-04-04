@@ -4,7 +4,10 @@ trigger: none
 jobs:
 - job: Deploy_Infrastructure_via_Terraform
   pool:
-    name: Hosted VS2017
+    name: Hosted Ubuntu 1604
+
+  variables:
+    ConnectedServiceName_local: $(ConnectedServiceName)
 
   steps:
   - task: qetza.replacetokens.replacetokens-task.replacetokens@3
@@ -12,30 +15,13 @@ jobs:
     inputs:
       rootDirectory: Terraform/ContosoTravel
       targetFiles: override.tf
+     
+  - task: AzureCLI@1
+    displayName: 'Azure CLI - Run Terraform'
+    inputs:
+      addSpnToEnvironment: true    
+      azureSubscription: '${{ variables.ConnectedServiceName_local }}'
+      scriptPath: '$(Build.sourcesDirectory)/Terraform/ContosoTravel/deploy.bash'
+      arguments: '$servicePrincipalId $servicePrincipalKey'
+      workingDirectory: $(Build.sourcesDirectory)
 
-  - task: petergroenewegen.PeterGroenewegen-Xpirit-Vsts-Release-Terraform.Xpirit-Vsts-Release-Terraform.Terraform@2
-    displayName: 'Terraform init'
-    inputs:
-      InstallTerraform: true
-      TemplatePath: Terraform/ContosoTravel
-      Arguments: 'init'
-      UseAzureSub: true
-      ConnectedServiceNameARM: $(ConnectedServiceName)
-  
-  - task: petergroenewegen.PeterGroenewegen-Xpirit-Vsts-Release-Terraform.Xpirit-Vsts-Release-Terraform.Terraform@2
-    displayName: 'Terraform plan'
-    inputs:
-      InstallTerraform: true
-      TemplatePath: Terraform/ContosoTravel
-      Arguments: 'plan'
-      UseAzureSub: true
-      ConnectedServiceNameARM: $(ConnectedServiceName)
-  
-  - task: petergroenewegen.PeterGroenewegen-Xpirit-Vsts-Release-Terraform.Xpirit-Vsts-Release-Terraform.Terraform@2
-    displayName: 'Terraform apply'
-    inputs:
-      InstallTerraform: true
-      TemplatePath: Terraform/ContosoTravel
-      Arguments: 'apply -auto-approve'
-      UseAzureSub: true
-      ConnectedServiceNameARM: $(ConnectedServiceName)
