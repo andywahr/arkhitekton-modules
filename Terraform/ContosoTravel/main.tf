@@ -288,6 +288,25 @@ module "eventing" {
   logAnalyticsId    = "${azurerm_log_analytics_workspace.logAnalytics.id}"
 }
 
+module "webSite" {
+  namePrefix                 = "${var.namePrefix}"
+  location                   = "${var.location}"
+  resourceGroupName          = "${azurerm_resource_group.resourceGroup.name}"
+  keyVaultUrl                = "${azurerm_key_vault.keyVault.vault_uri}"
+  keyVaultAccountName        = "${azurerm_key_vault.keyVault.name}"
+  keyVaultId                 = "${azurerm_key_vault.keyVault.id}"
+  appInsightsKey             = "${azurerm_application_insights.appInsights.instrumentation_key}"
+  storageAccountId           = "${azurerm_storage_account.storageAccount.id}"
+  logAnalyticsId             = "${azurerm_log_analytics_workspace.logAnalytics.id}"
+  logAnalyticsName           = "${azurerm_log_analytics_workspace.logAnalytics.name}"
+  vnetName                   = "${azurerm_subnet.appSubnet.name}"
+  vnetId                     = "${azurerm_subnet.appSubnet.id}"
+  servicePrincipalObjectId   = "${var.servicePrincipalObjectId}"
+  servicePrincipalClientId   = "${var.servicePrincipalClientId}"
+  servicePrincipalSecretName = "${var.servicePrincipalSecretName}"
+  platform                   = "${var.web_platform}"
+}
+
 module "service" {
   namePrefix              = "${var.namePrefix}"
   location                = "${var.location}"
@@ -308,25 +327,10 @@ module "service" {
   servicePrincipalSecretName = "${var.servicePrincipalSecretName}"
   web                        = "${var.web}"  
   platform                   = "${var.backend_platform}"
-}
 
-module "webSite" {
-  namePrefix                 = "${var.namePrefix}"
-  location                   = "${var.location}"
-  resourceGroupName          = "${azurerm_resource_group.resourceGroup.name}"
-  keyVaultUrl                = "${azurerm_key_vault.keyVault.vault_uri}"
-  keyVaultAccountName        = "${azurerm_key_vault.keyVault.name}"
-  keyVaultId                 = "${azurerm_key_vault.keyVault.id}"
-  appInsightsKey             = "${azurerm_application_insights.appInsights.instrumentation_key}"
-  storageAccountId           = "${azurerm_storage_account.storageAccount.id}"
-  logAnalyticsId             = "${azurerm_log_analytics_workspace.logAnalytics.id}"
-  logAnalyticsName           = "${azurerm_log_analytics_workspace.logAnalytics.name}"
-  vnetName                   = "${azurerm_subnet.appSubnet.name}"
-  vnetId                     = "${azurerm_subnet.appSubnet.id}"
-  servicePrincipalObjectId   = "${var.servicePrincipalObjectId}"
-  servicePrincipalClientId   = "${var.servicePrincipalClientId}"
-  servicePrincipalSecretName = "${var.servicePrincipalSecretName}"
-  platform                   = "${var.web_platform}"
+  depends_on = [
+        "${module.webSite.webSiteFQDN}"
+    ]
 }
 
 module "data" {

@@ -84,6 +84,12 @@ module "aksInstall" {
   standalone = "true"
 }
 
+resource "azurerm_key_vault_secret" "webSiteFQDN" {
+  name         = "ContosoTravel--WebSiteFQDN"
+  value        = "http://{contosotravel-web.${module.aksInstall.DNSZone}"
+  key_vault_id = "${var.keyVaultId}"
+}
+
 output "webSiteFQDN" {
-  value = "${module.aksInstall.webSiteFQDN}"
+  value = "contosotravel-web.${module.aksInstall.DNSZone}"
 }
