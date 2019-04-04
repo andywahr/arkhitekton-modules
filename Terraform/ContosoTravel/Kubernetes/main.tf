@@ -189,14 +189,14 @@ resource "azurerm_key_vault_access_policy" "kubKeyVaultPolicy" {
 resource "azurerm_key_vault_secret" "webSiteFQDN" {
   count        = "${var.standalone == "true" ? 1 : 0}"
   name         = "ContosoTravel--WebSiteFQDN"
-  value        = "http://contosotravel-web.module.${element(concat(azurerm_kubernetes_cluster.aks.*.addon_profile.0.http_application_routing.0.http_application_routing_zone_name, list("")), 0)}"
+  value        = "http://contosotravel-web.${element(concat(azurerm_kubernetes_cluster.aks.*.addon_profile.0.http_application_routing.0.http_application_routing_zone_name, list("")), 0)}"
   key_vault_id = "${var.keyVaultId}"
 }
 
 resource "azurerm_key_vault_secret" "serviceFQDN" {
   count        = "${var.standalone == "true" ? 1 : 0}"
   name         = "ContosoTravel--ServiceFQDN"
-  value        = "http://contosotravel-service.module.${element(concat(azurerm_kubernetes_cluster.aks.*.addon_profile.0.http_application_routing.0.http_application_routing_zone_name, list("")), 0)}"
+  value        = "http://contosotravel-service.${element(concat(azurerm_kubernetes_cluster.aks.*.addon_profile.0.http_application_routing.0.http_application_routing_zone_name, list("")), 0)}"
   key_vault_id = "${var.keyVaultId}"
 }
 
