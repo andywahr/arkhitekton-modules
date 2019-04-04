@@ -190,6 +190,6 @@ output "DNSZone" {
   value = "${var.standalone != "true" ? "" : element(concat(azurerm_kubernetes_cluster.aks.*.addon_profile.0.http_application_routing.0.http_application_routing_zone_name, list("")), 0)}"  
 }
 
-output "aksName" {
-  value = "aks-ContosoTravel-${var.namePrefix}"
-}
+#output "aksName" {
+#  value = "aks-ContosoTravel-${var.namePrefix}"
+#}

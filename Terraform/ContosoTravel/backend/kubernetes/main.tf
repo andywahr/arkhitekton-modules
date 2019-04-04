@@ -76,8 +76,6 @@ variable "platform" {
   type = "string"
 }
 
-variable depends_on { default = [], type = "list"}
-
 module "aksInstall" {
   source = "../../Kubernetes"
   namePrefix = "${var.namePrefix}"
@@ -98,14 +96,14 @@ module "aksInstall" {
   standalone = "${var.web == "websitekubernetes" ? "false" : "true"}"
 }
 
-data "azurerm_kubernetes_cluster" "aks" {
-  name                = "${module.aksInstall.aksName}"
-  resource_group_name = "${var.resourceGroupName}"
-}
+#data "azurerm_kubernetes_cluster" "aks" {
+#  name                = "${module.aksInstall.aksName}"
+#  resource_group_name = "${var.resourceGroupName}"
+#}
 
-resource "azurerm_key_vault_secret" "serviceFQDN" {
-  name         = "ContosoTravel--ServiceFQDN"
-  value        = "http://contosotravel-service.${data.azurerm_kubernetes_cluster.aks.addon_profile.0.http_application_routing.0.http_application_routing_zone_name}"
-  key_vault_id = "${var.keyVaultId}"
-}
+#resource "azurerm_key_vault_secret" "serviceFQDN" {
+#  name         = "ContosoTravel--ServiceFQDN"
+#  value        = "http://contosotravel-service.${data.azurerm_kubernetes_cluster.aks.addon_profile.0.http_application_routing.0.http_application_routing_zone_name}"
+#  key_vault_id = "${var.keyVaultId}"
+#}
 

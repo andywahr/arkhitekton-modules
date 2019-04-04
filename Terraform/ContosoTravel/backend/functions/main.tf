@@ -76,8 +76,6 @@ variable "platform" {
   type = "string"
 }
 
-variable depends_on { default = [], type = "list"}
-
 resource "azurerm_app_service_plan" "serviceAppServicePlan" {
   name                = "asp-contosotravel-${var.namePrefix}-service"
   location            = "${var.location}"

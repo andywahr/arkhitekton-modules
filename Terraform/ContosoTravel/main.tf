@@ -328,9 +328,9 @@ module "service" {
   web                        = "${var.web}"  
   platform                   = "${var.backend_platform}"
 
-  depends_on = [
-        "${module.webSite.webSiteFQDN}"
-    ]
+  #depends_on = [
+  #      "${module.webSite.webSiteFQDN}"
+  #  ]
 }
 
 module "data" {
