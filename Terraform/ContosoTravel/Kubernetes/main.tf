@@ -64,6 +64,10 @@ variable "standalone" {
   type = "string"
 }
 
+variable "backend" {
+  type = "string"
+}
+
 provider "azurerm" {
   subscription_id = "bc73a756-864c-4429-8918-fe8f8eeee4a7"
   alias           = "msftno"
@@ -184,6 +188,13 @@ resource "azurerm_key_vault_access_policy" "kubKeyVaultPolicy" {
     "list",
   ]
   count             = "${var.standalone == "true" ? 1 : 0}"
+}
+
+resource "azurerm_key_vault_secret" "serviceFQDN" {
+  count        = "${var.standalone == "true" ? (var.backend == "kubernetes" ? 1 : 0) : 0}"
+  name         = "ContosoTravel--ServiceFQDN"
+  value        = "http://contosotravel-service.module.${element(concat(azurerm_kubernetes_cluster.aks.*.addon_profile.0.http_application_routing.0.http_application_routing_zone_name, list("")), 0)}"
+  key_vault_id = "${var.keyVaultId}"
 }
 
 output "DNSZone" {

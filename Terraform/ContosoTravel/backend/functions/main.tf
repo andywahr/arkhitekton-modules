@@ -114,6 +114,12 @@ resource "azurerm_function_app" "service" {
 
 }
 
+resource "azurerm_key_vault_secret" "serviceFQDN" {
+  name         = "ContosoTravel--ServiceFQDN"
+  value        = "http://contosotravel-${var.namePrefix}-service.azurewebsites.net/api/PurchaseItinerary"
+  key_vault_id = "${var.keyVaultId}"
+}
+
 #resource "azurerm_monitor_diagnostic_setting" "serviceDiag" {
 #  name               = "${var.namePrefix}-serviceDiag"
 #  target_resource_id = "${azurerm_function_app.service.id}"

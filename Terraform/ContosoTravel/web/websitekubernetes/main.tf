@@ -64,6 +64,10 @@ variable "platform" {
   type = "string"
 }
 
+variable "backend" {
+  type = "string"
+}
+
 module "aksInstall" {
   source = "../../Kubernetes"
   namePrefix = "${var.namePrefix}"
@@ -82,6 +86,7 @@ module "aksInstall" {
   servicePrincipalObjectId = "${var.servicePrincipalObjectId}"
   servicePrincipalSecretName = "${var.servicePrincipalSecretName}"
   standalone = "true"
+  backend = "${var.backend}"
 }
 
 resource "azurerm_key_vault_secret" "webSiteFQDN" {

@@ -305,6 +305,7 @@ module "webSite" {
   servicePrincipalClientId   = "${var.servicePrincipalClientId}"
   servicePrincipalSecretName = "${var.servicePrincipalSecretName}"
   platform                   = "${var.web_platform}"
+  backend                    = "${var.backend}"
 }
 
 module "service" {
@@ -327,10 +328,6 @@ module "service" {
   servicePrincipalSecretName = "${var.servicePrincipalSecretName}"
   web                        = "${var.web}"  
   platform                   = "${var.backend_platform}"
-
-  #depends_on = [
-  #      "${module.webSite.webSiteFQDN}"
-  #  ]
 }
 
 module "data" {

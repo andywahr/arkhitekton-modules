@@ -94,6 +94,7 @@ module "aksInstall" {
   servicePrincipalObjectId = "${var.servicePrincipalObjectId}"
   servicePrincipalSecretName = "${var.servicePrincipalSecretName}"
   standalone = "${var.web == "websitekubernetes" ? "false" : "true"}"
+  backend = "kubernetes"
 }
 
 #data "azurerm_kubernetes_cluster" "aks" {
