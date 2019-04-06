@@ -19,13 +19,13 @@ variable "enabled" {
 }
 
 resource "azurerm_traffic_manager_profile" "trafficManager" {
-  name                   = "trafficManager-${var.namePrefix}"
+  name                   = "trafficmanager-contosotravel-${lower(var.namePrefix)}"
   resource_group_name    = "${var.resourceGroupName}"
   traffic_routing_method = "Performance"
   count               = "${var.enabled == "true" ? 1 : 0}"
 
   dns_config {
-    relative_name = "tm-contosotravel-${var.namePrefix}"
+    relative_name = "trafficmanager-contosotravel-${lower(var.namePrefix)}"
     ttl           = 300
   }
 

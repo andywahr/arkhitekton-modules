@@ -44,7 +44,7 @@ resource "azurerm_public_ip" "appGatewayPIP" {
   resource_group_name = "${var.resourceGroupName}"
   allocation_method   = "Dynamic"
   count               = "${var.enabled == "true" ? 1 : 0}"
-  domain_name_label   = "www-${lower(var.namePrefix)}-contosotravel"
+  domain_name_label   = "appgateway-contosotravel-${lower(var.namePrefix)}"
 }
 
 # since these variables are re-used - a locals block makes this more maintainable

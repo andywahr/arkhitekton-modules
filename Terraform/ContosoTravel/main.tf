@@ -377,7 +377,7 @@ module "cdn" {
 resource "azurerm_key_vault_secret" "webSiteFQDN" {
   name         = "ContosoTravel--WebSiteFQDN"
   value        = "${var.cdn == "true" ? module.cdn.webSiteFQDN : (var.trafficmanager == "true" ? module.trafficManager.webSiteFQDN : (var.appgateway == "true" ? module.appGateway.webSiteFQDN : module.webSite.webSiteFQDN))}"
-  key_vault_id = "${azurerm_key_vault.keyVault}"
+  key_vault_id = "${azurerm_key_vault.keyVault.id}"
 }
 
 

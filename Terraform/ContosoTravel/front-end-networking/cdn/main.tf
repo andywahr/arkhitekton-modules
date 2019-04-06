@@ -27,7 +27,7 @@ resource "azurerm_cdn_profile" "cdn" {
 }
 
 resource "azurerm_cdn_endpoint" "cdnEndpoint" {
-  name                   = "cdn-contosoTravel-${var.namePrefix}"
+  name                   = "cdn-contosotravel-${lower(var.namePrefix)}"
   profile_name           = "${azurerm_cdn_profile.cdn.name}"
   location               = "${var.location}"
   resource_group_name    = "${var.resourceGroupName}"
