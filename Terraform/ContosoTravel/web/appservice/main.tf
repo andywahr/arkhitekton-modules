@@ -137,12 +137,6 @@ resource "azurerm_key_vault_access_policy" "webKeyVaultPolicy" {
 #  }
 #}
 
-resource "azurerm_key_vault_secret" "webSiteFQDN" {
-  name         = "ContosoTravel--WebSiteFQDN"
-  value        = "http://${azurerm_app_service.webSite.default_site_hostname}"
-  key_vault_id = "${var.keyVaultId}"
-}
-
 output "webSiteFQDN" {
   value = "${azurerm_app_service.webSite.default_site_hostname}"
 }

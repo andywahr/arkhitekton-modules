@@ -136,15 +136,6 @@ resource "azurerm_monitor_diagnostic_setting" "appGatewayDiag" {
   storage_account_id = "${var.storageAccountId}"
   count               = "${var.enabled == "true" ? 1 : 0}"
   log_analytics_workspace_id = "${var.logAnalyticsId}"
-  
-  log {
-    category = "AuditEvent"
-    enabled  = true
-
-    retention_policy {
-      enabled = false
-    }
-  }
 
   metric {
     category = "AllMetrics"
