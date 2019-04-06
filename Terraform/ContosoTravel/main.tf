@@ -356,6 +356,24 @@ module "appGateway" {
   logAnalyticsName  = "${azurerm_log_analytics_workspace.logAnalytics.name}"
 }
 
+module "trafficManager" {
+  enabled           = "${var.trafficmanager}"
+  source            = "./front-end-networking/trafficmanager"
+  namePrefix        = "${var.namePrefix}"
+  location          = "${var.location}"
+  resourceGroupName = "${azurerm_resource_group.resourceGroup.name}"
+  webSiteFQDN       = "${var.appgateway == "true" ? module.appGateway.webSiteFQDN : module.webSite.webSiteFQDN}"
+}
+
+module "cdn" {
+  enabled           = "${var.cdn}"
+  source            = "./front-end-networking/cdn"
+  namePrefix        = "${var.namePrefix}"
+  location          = "${var.location}"
+  resourceGroupName = "${azurerm_resource_group.resourceGroup.name}"
+  webSiteFQDN       = "${var.trafficmanager == "true" ? module.trafficmanager.webSiteFQDN : (var.appgateway == "true" ? module.appGateway.webSiteFQDN : module.webSite.webSiteFQDN)}"
+}
+
 #resource "azurerm_storage_share" "aciLogShare" {
 #  name = "dataloader-share"
 #

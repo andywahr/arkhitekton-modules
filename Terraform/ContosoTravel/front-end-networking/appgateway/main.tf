@@ -168,3 +168,7 @@ resource "azurerm_log_analytics_solution" "appGatewayInsights" {
     product   = "OMSGallery/AzureAppGatewayAnalytics"
   }
 }
+
+output "webSiteFQDN" {
+  value = "${element(concat(azurerm_public_ip.appGatewayPIP.*.domain_name_label, list("")), 0)}.${var.location}.cloudapp.azure.com"
+}
