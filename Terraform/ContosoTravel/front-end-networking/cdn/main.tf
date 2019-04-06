@@ -33,7 +33,6 @@ resource "azurerm_cdn_endpoint" "cdnEndpoint" {
   resource_group_name    = "${var.resourceGroupName}"
   count                  = "${var.enabled == "true" ? 1 : 0}"
   optimization_type      = "DynamicSiteAcceleration"
-  is_compression_enabled = "true"
 
   origin {
     name      = "contosoTravel"
