@@ -119,15 +119,15 @@ resource "azurerm_virtual_machine_scale_set" "vmss" {
   upgrade_policy_mode = "Manual"
 
   sku {
-    name     = "Standard_DS1_v2"
+    name     = "Standard_DS2_v2"
     tier     = "Standard"
     capacity = 2
   }
 
   storage_profile_image_reference {
-    publisher = "Canonical"
-    offer     = "UbuntuServer"
-    sku       = "16.04-LTS"
+    publisher = "MicrosoftWindowsServer"
+    offer     = "WindowsServer"
+    sku       = "2019-Datacenter-Core-smalldisk"
     version   = "latest"
   }
 
@@ -149,11 +149,12 @@ resource "azurerm_virtual_machine_scale_set" "vmss" {
     computer_name_prefix = "contosotravel-${lower(var.namePrefix)}"
     admin_username       = "${var.admin_user}"
     admin_password       = "${var.admin_password}"
-    custom_data          = "${file("web.conf")}"
+    custom_data          = "${file("config.ps1")}"
   }
 
-  os_profile_linux_config {
-    disable_password_authentication = false
+  os_profile_windows_config {
+    enable_automatic_upgrades = false
+    provision_vm_agent = true
   }
 
   network_profile {
@@ -166,6 +167,18 @@ resource "azurerm_virtual_machine_scale_set" "vmss" {
       load_balancer_backend_address_pool_ids = ["${azurerm_lb_backend_address_pool.bpepool.id}"]
       primary                                = true
     }
+  }
+
+  identity {
+    type = "SystemAssigned"
+  }
+
+  extension {
+    name                       = "DoSomething"
+    publisher                  = "Microsoft.Compute"
+    type                       = "CustomScriptExtension"
+    type_handler_version       = "1.9"
+    auto_upgrade_minor_version = true
   }
 }
 
